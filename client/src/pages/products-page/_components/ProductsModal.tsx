@@ -9,11 +9,12 @@ import { Product, useProductsStore } from "../../../store/useProductsStore";
 import Select from "../../../components/ui/Select";
 import { useCategoriesStore } from "../../../store/useCategoriesStore";
 import PreviewCard from "./PreviewCard";
+import ImageUpload from "../../../components/ui/ImageUpload";
 
 const schema = yup.object({
   title: yup.string().required("Ürün adı zorunludur"),
   price: yup.number().required("Fiyat zorunludur"),
-  productImage: yup.string().optional(),
+  productImage: yup.string().optional().nullable(),
   category_id: yup.number().required("Kategori seçimi zorunludur"),
 });
 
@@ -93,8 +94,6 @@ const ProductsModal = ({
       productImage: selectedImage,
     };
 
-    console.log("Payload:", payload);
-
     if (!isAddOperation) {
       await updateProduct(payload as any, selectedRow?.id as number);
     } else {
@@ -121,11 +120,6 @@ const ProductsModal = ({
     if (isAddOperation) {
       setValue("productImage", file, { shouldValidate: true });
     }
-
-    // if (file && file.size > 2 * 1024 * 1024) {
-    //   alert("Dosya boyutu 2MB'den büyük olamaz.");
-    //   setValue("productImage", "");
-    // }
   };
 
   // Reset form values
@@ -140,6 +134,8 @@ const ProductsModal = ({
     errors.productImage = undefined;
 
     setSelectedRow(null);
+    setSelectedImage(null);
+    setPreviewImage(null);
   };
 
   return (
@@ -165,18 +161,20 @@ const ProductsModal = ({
         />
 
         <form className="space-y-4 w-full" onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            label="Ürün Adı"
-            value={watchTitle}
-            {...register("title")}
-            errorMessage={errors.title?.message as string}
-          />
-          <Input
-            label="Ürün Fiyatı"
-            value={watchPrice}
-            {...register("price")}
-            errorMessage={errors.price?.message as string}
-          />
+          <div className="flex gap-4">
+            <Input
+              label="Ürün Adı"
+              value={watchTitle}
+              {...register("title")}
+              errorMessage={errors.title?.message as string}
+            />
+            <Input
+              label="Ürün Fiyatı"
+              value={watchPrice}
+              {...register("price")}
+              errorMessage={errors.price?.message as string}
+            />
+          </div>
 
           <Controller
             name="category_id"
@@ -193,43 +191,11 @@ const ProductsModal = ({
             )}
           />
 
-          {/* Image Upload */}
-          <div className="w-full">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ürün Görseli
-            </label>
-
-            <div className="flex items-center gap-4">
-              <label
-                htmlFor={
-                  isAddOperation ? "productImageAdd" : "productImageEdit"
-                }
-                className="flex flex-col items-center justify-center w-full max-w-xs h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 transition-colors duration-200 bg-gray-50"
-              >
-                <input
-                  type="file"
-                  id={isAddOperation ? "productImageAdd" : "productImageEdit"}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-                <span className="text-sm text-gray-500">
-                  Resim yüklemek için tıklayın
-                </span>
-              </label>
-
-              {/* Önizleme */}
-              {previewImage && (
-                <div className="relative w-28 h-28 rounded overflow-hidden border shadow-sm">
-                  <img
-                    src={previewImage}
-                    alt="Yüklenen görsel"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+          <ImageUpload
+            inputId={isAddOperation ? "productImageAdd" : "productImageEdit"}
+            onChange={handleImageChange}
+            previewUrl={previewImage}
+          />
         </form>
       </section>
     </Modal>

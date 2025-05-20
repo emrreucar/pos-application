@@ -99,9 +99,9 @@ const Sidebar = ({ showSidebar }: { showSidebar?: boolean }) => {
             <Link
               key={item.id}
               to={item.route}
-              className={`flex items-center gap-3 px-4 py-2 rounded-full hover:bg-primary/50 hover:text-white transition-colors duration-200 ${
+              className={`flex items-center gap-3 px-4 py-2 rounded-full hover:bg-primary/70 hover:text-white transition-colors duration-200 ${
                 pathname === item.route
-                  ? "bg-primary/30 text-primary font-bold hover:!bg-primary/30 hover:!text-primary"
+                  ? "bg-primary/90 text-white font-semibold hover:!bg-primary/90 hover:!text-white"
                   : "bg-white text-gray-700 font-medium"
               }`}
             >

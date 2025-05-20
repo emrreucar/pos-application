@@ -12,3 +12,10 @@ export const formatPhoneNumber = (value: string) => {
 export const unmaskPhoneNumber = (value: string) => {
   return value.replace(/\D/g, "");
 };
+
+export const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("tr-TR", {
+    style: "currency",
+    currency: "TRY",
+  }).format(value);
+};

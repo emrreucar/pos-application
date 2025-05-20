@@ -60,10 +60,12 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
         loading: false,
       }));
       toast.success("Kategori başarıyla eklendi.");
-    } catch (error) {
+    } catch (error: any) {
       console.log("Kategori eklerken hata oluştu:", error);
       set({ loading: false, error: "Kategori eklerken hata oluştu." });
-      toast.error("Kategori eklerken hata oluştu.");
+      toast.error(
+        error?.response?.data?.message || "Kategori eklerken hata oluştu."
+      );
     }
   },
 
@@ -85,10 +87,12 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
         loading: false,
       }));
       toast.success("Kategori başarıyla güncellendi.");
-    } catch (error) {
+    } catch (error: any) {
       console.log("Kategori güncellerken hata oluştu:", error);
       set({ loading: false, error: "Kategori güncellerken hata oluştu." });
-      toast.error("Kategori güncellerken hata oluştu.");
+      toast.error(
+        error?.response?.data?.message || "Kategori güncellerken hata oluştu."
+      );
     }
   },
 
@@ -102,10 +106,12 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
         loading: false,
       }));
       toast.success("Kategori başarıyla silindi.");
-    } catch (error) {
+    } catch (error: any) {
       console.log("Kategori silerken hata oluştu:", error);
       set({ loading: false, error: "Kategori silerken hata oluştu." });
-      toast.error("Kategori silerken hata oluştu.");
+      toast.error(
+        error?.response?.data?.message || "Kategori silerken hata oluştu."
+      );
     }
   },
 }));

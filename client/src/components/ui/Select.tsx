@@ -27,7 +27,6 @@ const Select: React.FC<SelectProps> = ({
   placeholder = "Seçiniz...",
   label,
   errorMessage,
-  ...rest
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -60,27 +59,32 @@ const Select: React.FC<SelectProps> = ({
         </label>
       )}
 
-      <button
-        type="button"
-        className={`w-full border px-3 py-2 rounded-md flex justify-between items-center bg-white text-sm text-gray-700 shadow-sm hover:border-gray-200 ${
-          errorMessage ? "border-red-500" : ""
-        }`}
-        onClick={() => setIsOpen(!isOpen)}
-        {...rest} // support react-hook-form
-      >
-        <span>{selected?.label || placeholder}</span>
-        <ChevronDown size={16} className="ml-2" />
-      </button>
+      <div className="flex items-center justify-between relative">
+        <input
+          type="text"
+          value={isOpen ? search : selected?.label || ""}
+          onChange={(e) => {
+            if (isOpen) {
+              setSearch(e.target.value);
+            }
+          }}
+          onClick={() => setIsOpen(true)}
+          readOnly={!isOpen}
+          className={`outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full border px-3 py-2 rounded-md bg-white text-sm text-gray-700 shadow-sm hover:border-gray-200 ${
+            errorMessage ? "border-red-500" : ""
+          }`}
+          placeholder={placeholder}
+        />
+        <ChevronDown
+          size={16}
+          className={`absolute top-3 right-2 ${
+            isOpen ? "rotate-180" : ""
+          } transition-transform duration-200 cursor-pointer`}
+        />
+      </div>
 
       {isOpen && (
-        <div className="absolute z-40 mt-1 w-full bg-white border rounded-md shadow-lg h-44 overflow-y-auto">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-3 py-2 border-b text-sm outline-none"
-            placeholder="Ara..."
-          />
+        <div className="absolute z-40 mt-1 w-full bg-white border rounded-md shadow-lg max-h-44 overflow-y-auto">
           <ul className="divide-y">
             {filteredOptions.map((opt) => (
               <li

@@ -7,6 +7,7 @@ interface ConfirmDeleteModalProps {
   onClose: () => void;
   onConfirm: () => void;
   message?: string;
+  buttonText?: string;
 }
 
 const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
@@ -14,6 +15,7 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
   onClose,
   onConfirm,
   message = "Bu satırı silmek istediğinize emin misiniz?",
+  buttonText = "Evet, Sil",
 }) => {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -71,7 +73,7 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
                   onClick={onConfirm}
                   className="px-4 py-2 rounded-md text-sm bg-red-600 hover:bg-red-700 text-white"
                 >
-                  Evet, Sil
+                  {buttonText}
                 </button>
               </div>
             </div>

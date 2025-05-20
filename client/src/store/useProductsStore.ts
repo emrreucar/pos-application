@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
+import debounce from "lodash/debounce";
 
 export interface Product {
   id: number;
@@ -23,14 +24,42 @@ interface ProductsState {
   updateProduct: (product: Product, id: number) => Promise<void>;
   deleteProduct: (id: number) => Promise<void>;
   getProductsByCategoryId: (categoryId: number) => Promise<Product | null>;
-  getProductsBySearch: (search: string) => Promise<Product[]>;
+  getProductsBySearch: (search: string) => Promise<void>;
 }
+
+const debouncedFetch = debounce(async (search: string, set: any) => {
+  try {
+    set({ loading: true, error: null });
+
+    const response = await axiosInstance.get(
+      `/search-products?search=${search}`
+    );
+
+    const formattedProducts = response.data.map((product: Product) => ({
+      ...product,
+      price: Number(product.price),
+      created_at: dayjs(product.created_at).format("DD.MM.YYYY"),
+      updated_at: dayjs(product.updated_at).format("DD.MM.YYYY"),
+    }));
+
+    set({ products: formattedProducts });
+    set({ loading: false });
+  } catch (error) {
+    console.log("Ürünleri ararken hata oluştu:", error);
+    set({
+      loading: false,
+      error: "Ürünleri ararken hata oluştu.",
+      products: [],
+    });
+  }
+}, 500);
 
 export const useProductsStore = create<ProductsState>((set) => ({
   products: [],
   loading: false,
   error: null,
 
+  // Fetch all products
   fetchProducts: async () => {
     try {
       set({ loading: true, error: null });
@@ -51,6 +80,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
     }
   },
 
+  // Create a new product
   createProduct: async (product: Product) => {
     try {
       set({ loading: true, error: null });
@@ -88,13 +118,17 @@ export const useProductsStore = create<ProductsState>((set) => ({
       }));
 
       toast.success("Ürün başarıyla eklendi.");
-    } catch (error) {
+    } catch (error: any) {
       console.log("Ürün eklerken hata oluştu:", error);
       set({ loading: false, error: "Ürün eklerken hata oluştu." });
-      toast.error("Ürün eklerken hata oluştu. catch bloğu");
+      toast.error(
+        error?.response?.data?.message ||
+          "Ürün eklerken hata oluştu. catch bloğu"
+      );
     }
   },
 
+  // Update a product by ID
   updateProduct: async (product: Product, id: number) => {
     try {
       set({ loading: true, error: null });
@@ -134,14 +168,69 @@ export const useProductsStore = create<ProductsState>((set) => ({
       }));
 
       toast.success("Ürün başarıyla güncellendi.");
-    } catch (error) {
+    } catch (error: any) {
       console.log("Ürün güncellerken hata oluştu:", error);
       set({ loading: false, error: "Ürün güncellerken hata oluştu." });
-      toast.error("Ürün güncellerken hata oluştu. catch bloğu");
+      toast.error(
+        error?.response?.data?.message || "Ürün güncellerken hata oluştu."
+      );
     }
   },
 
-  deleteProduct: async (id: number) => {},
-  getProductsByCategoryId: async (categoryId: number) => {},
-  getProductsBySearch: async (search: string) => {},
+  // Delete a product by ID
+  deleteProduct: async (id: number) => {
+    try {
+      set({ loading: true, error: null });
+
+      await axiosInstance.delete(`/products/${id}`);
+
+      set((state) => ({
+        products: state.products.filter((item) => item.id !== id),
+        loading: false,
+      }));
+
+      toast.success("Ürün başarıyla silindi.");
+    } catch (error: any) {
+      console.log("Ürün silerken hata oluştu:", error);
+      set({ loading: false, error: "Ürün silerken hata oluştu." });
+      toast.error(
+        error?.response?.data?.message || "Ürün silerken hata oluştu."
+      );
+    }
+  },
+
+  // Fetch products by category ID
+  getProductsByCategoryId: async (categoryId: number) => {
+    try {
+      set({ loading: true, error: null });
+
+      const response = await axiosInstance.get(
+        `/products/category/${categoryId}`
+      );
+
+      const formattedProducts = response.data.map((product: Product) => ({
+        ...product,
+        price: Number(product.price),
+        created_at: dayjs(product.created_at).format("DD.MM.YYYY"),
+        updated_at: dayjs(product.updated_at).format("DD.MM.YYYY"),
+      }));
+
+      set({ products: formattedProducts });
+      set({ loading: false });
+
+      return formattedProducts;
+    } catch (error) {
+      console.log("Ürünleri kategoriye göre getirirken hata oluştu:", error);
+      set({
+        products: [],
+        loading: false,
+        error: "Ürünleri kategoriye göre getirirken hata oluştu.",
+      });
+    }
+  },
+
+  // Fetch products by search term
+  getProductsBySearch: async (search: string) => {
+    debouncedFetch(search, set);
+  },
 }));

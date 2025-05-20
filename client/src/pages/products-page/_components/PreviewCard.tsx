@@ -10,14 +10,14 @@ const PreviewCard = ({
   return (
     <div className="flex flex-col w-1/3 h-full">
       <span className="block text-center mb-2">Ürün Ön İzlemesi</span>
-      <div className="p-4 border rounded-lg shadow-md w-full">
+      <div className="p-4 border rounded-lg shadow-md w-full relative">
         <img
           src={image ? image : "/images/no-image.jpg"}
           alt="Ürün Görseli"
-          className="w-full h-32 object-cover mb-4 rounded-lg"
+          className="w-full h-32 object-contain mb-4 rounded-lg"
         />
-        <h2 className="text-lg font-semibold text-center">
-          {title?.length > 30 ? title?.slice(0, 30) + "..." : title}
+        <h2 className="text-lg font-semibold text-center line-clamp-2">
+          {title}
         </h2>
         <p className="text-gray-500 text-center">
           {price ? (

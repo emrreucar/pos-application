@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import DataTable from "../../components/ui/Table";
-import { useProductsStore } from "../../store/useProductsStore";
+import { Product, useProductsStore } from "../../store/useProductsStore";
 import Actions from "../../components/ui/Actions";
 import { toast } from "react-toastify";
 import ProductsModal from "./_components/ProductsModal";
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 
 const columns: {
   key:
@@ -27,11 +28,13 @@ const columns: {
 ];
 
 const ProductsPage = () => {
+  const [visibleDeleteModal, setVisibleDeleteModal] = useState(false);
   const [visibleProductsModal, setVisibleProductsModal] = useState(false);
   const [isAddOperation, setIsAddOperation] = useState(true);
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedRow, setSelectedRow] = useState<Product | null>(null);
 
-  const { products, fetchProducts, loading } = useProductsStore();
+  const { products, deleteProduct, fetchProducts, loading } =
+    useProductsStore();
 
   useEffect(() => {
     fetchProducts();
@@ -39,7 +42,6 @@ const ProductsPage = () => {
 
   const handleRowClick = (row: any) => {
     setSelectedRow(row);
-    // getProductById(row.id);
   };
 
   const handleAddClick = () => {
@@ -56,9 +58,19 @@ const ProductsPage = () => {
 
   const handleDeleteClick = () => {
     if (!selectedRow) return toast.error("Lütfen bir ürün seçin.");
+
+    setVisibleDeleteModal(true);
   };
 
-  if (loading) return <div>Loading...</div>;
+  const handleDeleteConfirm = () => {
+    if (selectedRow) {
+      deleteProduct(selectedRow?.id);
+      setVisibleDeleteModal(false);
+      setSelectedRow(null);
+    }
+  };
+
+  if (loading) return <div>Yükleniyor...</div>;
 
   return (
     <>
@@ -80,6 +92,12 @@ const ProductsPage = () => {
         isAddOperation={isAddOperation}
         selectedRow={selectedRow}
         setSelectedRow={setSelectedRow}
+      />
+      <ConfirmDeleteModal
+        open={visibleDeleteModal}
+        onClose={() => setVisibleDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        message="Bu ürünü silmek istediğinize emin misiniz?"
       />
     </>
   );

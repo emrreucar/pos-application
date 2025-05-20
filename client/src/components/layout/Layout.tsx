@@ -2,6 +2,7 @@ import React from "react";
 import Sidebar from "./Sidebar";
 import Header from "../../pages/home-page/_components/Header";
 import { useLocation } from "react-router-dom";
+import OrdersSummary from "../cart/OrdersSummary";
 
 const Layout = ({
   children,
@@ -16,7 +17,7 @@ const Layout = ({
   const isHomePage = location.pathname === "/";
 
   return (
-    <section className="flex h-screen bg-[#f6f6f6]">
+    <section className="flex h-screen w-full bg-[#f6f6f6]">
       {/* sidebar */}
       <Sidebar showSidebar={showSidebar} />
 
@@ -31,11 +32,7 @@ const Layout = ({
         </div>
 
         {/* cart section only show home page */}
-        {isHomePage && (
-          <div className="w-[400px] bg-[#fff] p-4 h-full border-l border-gray-300 rounded-l-2xl">
-            <span>cart section</span>
-          </div>
-        )}
+        {isHomePage && <OrdersSummary />}
       </div>
     </section>
   );
