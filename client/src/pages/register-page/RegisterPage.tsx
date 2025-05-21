@@ -69,7 +69,7 @@ const RegisterPage = () => {
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
-    setValue("phone_number", formatted); // react-hook-form'a yeni değeri bildirmem gerekiyor.
+    setValue("phone_number", formatted, { shouldValidate: true }); // react-hook-form'a yeni değeri bildirmem gerekiyor.
   };
 
   return (
@@ -95,18 +95,21 @@ const RegisterPage = () => {
               value={watchName}
               {...register("name")}
               errorMessage={errors.name?.message}
+              required
             />
             <Input
               label="Soyisim"
               value={watchSurname}
               {...register("surname")}
               errorMessage={errors.surname?.message}
+              required
             />
             <Input
               label="Şirket Adı"
               value={watchCompanyName}
               {...register("company_name")}
               errorMessage={errors.company_name?.message}
+              required
             />
             <Input
               type="text"
@@ -114,6 +117,7 @@ const RegisterPage = () => {
               value={watchPhoneNumber}
               {...register("phone_number")}
               errorMessage={errors.phone_number?.message}
+              required
               onChange={handlePhoneChange}
             />
             <Input
@@ -121,6 +125,7 @@ const RegisterPage = () => {
               value={watchUsername}
               {...register("username")}
               errorMessage={errors.username?.message}
+              required
             />
             <Input
               type="email"
@@ -128,6 +133,7 @@ const RegisterPage = () => {
               label="Email"
               {...register("email")}
               errorMessage={errors.email?.message}
+              required
             />
             <Input
               type="password"
@@ -135,6 +141,7 @@ const RegisterPage = () => {
               label="Şifre"
               {...register("password")}
               errorMessage={errors.password?.message}
+              required
             />
 
             <Button

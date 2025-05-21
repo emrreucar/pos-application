@@ -1,11 +1,11 @@
-import { ChartBarStacked, Home, ShoppingCart } from "lucide-react";
+import { ChartArea, ChartBarStacked, Home, ShoppingCart } from "lucide-react";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { FaUserGear } from "react-icons/fa6";
-import { FcStatistics } from "react-icons/fc";
 import { IoIosSettings } from "react-icons/io";
 import { TbFileInvoice } from "react-icons/tb";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useUsersStore } from "../../store/useUsersStore";
 
 const ROUTES = [
   {
@@ -47,7 +47,7 @@ const ROUTES = [
   {
     id: 8,
     name: "İstatistikler",
-    icon: <FcStatistics size={15} />,
+    icon: <ChartArea size={15} />,
     route: "/istatistikler",
   },
   {
@@ -59,6 +59,8 @@ const ROUTES = [
 ];
 
 const Sidebar = ({ showSidebar }: { showSidebar?: boolean }) => {
+  const { user } = useAuthStore();
+  const { users } = useUsersStore();
   const { logout } = useAuthStore();
 
   const location = useLocation();
@@ -70,6 +72,8 @@ const Sidebar = ({ showSidebar }: { showSidebar?: boolean }) => {
     logout();
     navigate("/giris-yap");
   };
+
+  const findUser = users.find((u) => u.id === user?.id);
 
   return (
     <aside
@@ -114,16 +118,25 @@ const Sidebar = ({ showSidebar }: { showSidebar?: boolean }) => {
         </nav>
       </article>
 
-      {/* PROFILE - LOGOUT */}
-      <div className="border-t pt-4 mt-6 px-2 flex items-center justify-between text-sm text-gray-600">
-        <button className="hover:text-primary font-medium">Profil</button>
-        <span className="text-gray-400">•</span>
-        <button
-          className="hover:text-red-500 font-medium"
-          onClick={handleLogout}
-        >
-          Çıkış Yap
-        </button>
+      {/* footer */}
+      <div className="flex flex-col gap-4">
+        <div>
+          <span className="font-bold text-xl text-center block text-primary">
+            {" "}
+            {findUser?.company_name || user?.company_name}{" "}
+          </span>
+        </div>
+        {/* PROFILE - LOGOUT */}
+        <div className="border-t pt-4 mt-6 px-2 flex items-center justify-between text-sm text-gray-600">
+          <button className="hover:text-primary font-medium">Profil</button>
+          <span className="text-gray-400">•</span>
+          <button
+            className="hover:text-red-500 font-medium"
+            onClick={handleLogout}
+          >
+            Çıkış Yap
+          </button>
+        </div>
       </div>
     </aside>
   );

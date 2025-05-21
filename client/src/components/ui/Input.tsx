@@ -11,6 +11,7 @@ interface InputProps
   inputSize?: "sm" | "md" | "lg";
   icon?: React.ReactNode;
   errorMessage?: string;
+  required?: boolean;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -21,6 +22,7 @@ const Input: React.FC<InputProps> = ({
   inputSize = "md",
   icon,
   errorMessage,
+  required = false,
   ...rest
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -60,7 +62,7 @@ const Input: React.FC<InputProps> = ({
   const currentSize = sizeClasses[inputSize];
 
   return (
-    <>
+    <div className="flex flex-col w-full">
       <div className="relative w-full">
         <input
           type={inputType}
@@ -94,6 +96,17 @@ const Input: React.FC<InputProps> = ({
             errorMessage && "!text-red-500"
           )}
         >
+          {required && (
+            <span
+              className={`peer-focus:!text-blue-500
+                ${value ? "!text-blue-500" : ""}
+                ${errorMessage ? "text-red-500" : "text-gray-500"} mr-1
+            
+            `}
+            >
+              *
+            </span>
+          )}
           {label}
         </label>
 
@@ -117,7 +130,7 @@ const Input: React.FC<InputProps> = ({
       {errorMessage && (
         <span className="text-red-500 text-xs mt-1">{errorMessage}</span>
       )}
-    </>
+    </div>
   );
 };
 

@@ -11,14 +11,9 @@ export const updateUserValidatior = [
     .withMessage("Email boş olamaz")
     .isEmail()
     .withMessage("Geçersiz email formatı"),
-  body("password")
-    .notEmpty()
-    .withMessage("Şifre boş olamaz")
-    .isLength({ min: 6 })
-    .withMessage("Şifre en az 6 karakter olmalıdır"),
   body("role")
     .notEmpty()
     .withMessage("Rol boş olamaz")
-    .isIn(["admin", "user"])
+    .isIn(["admin", "User"])
     .withMessage("Geçersiz rol"),
 ];

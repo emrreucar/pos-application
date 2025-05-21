@@ -44,7 +44,7 @@ const ProductCardItem = ({ product }: { product: Product }) => {
 
       {/* + Butonu */}
       <div
-        className="mt-auto flex justify-end pt-4 select-none"
+        className="mt-auto flex justify-end pt-4 select-none w-fit ml-auto"
         onClick={() => addToCart(product)}
       >
         {cartItems.some((item) => item.id === product.id) ? (

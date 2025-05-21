@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { X, Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TbLoader2 } from "react-icons/tb";
+import { IoMdPrint } from "react-icons/io";
 
 interface ModalProps {
   open: boolean;
@@ -9,8 +10,9 @@ interface ModalProps {
   children: React.ReactNode;
   onClose: () => void;
   onConfirm?: () => void;
-  height?: string; // e.g., "h-[80vh]"
-  width?: string; // e.g., "max-w-2xl"
+  onPrint?: () => void;
+  height?: string;
+  width?: string;
   showConfirmButton?: boolean;
   loading?: boolean;
 }
@@ -21,6 +23,7 @@ const Modal: React.FC<ModalProps> = ({
   children,
   onClose,
   onConfirm,
+  onPrint,
   height = "h-auto",
   width = "max-w-2xl",
   showConfirmButton = true,
@@ -56,7 +59,7 @@ const Modal: React.FC<ModalProps> = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className={`bg-white w-full ${width} ${height} rounded-lg shadow-lg overflow-hidden`}
+            className={`bg-white w-full ${width} ${height} rounded-lg shadow-lg overflow-hidden flex flex-col`}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b">
@@ -77,6 +80,16 @@ const Modal: React.FC<ModalProps> = ({
                   <TbLoader2 className="size-5 animate-spin text-primary" />
                 )}
 
+                {onPrint && (
+                  <button
+                    onClick={onPrint}
+                    title="Yazdır"
+                    className="p-2 rounded-full bg-slate-100 hover:bg-blue-100 text-blue-600"
+                  >
+                    <IoMdPrint size={21} />
+                  </button>
+                )}
+
                 <button
                   onClick={onClose}
                   title="Kapat"
@@ -88,7 +101,7 @@ const Modal: React.FC<ModalProps> = ({
             </div>
 
             {/* Content */}
-            <div className="p-5 max-h-[80vh] overflow-y-auto">{children}</div>
+            <div className="p-5 flex-1 overflow-y-auto">{children}</div>
           </motion.div>
         </motion.div>
       )}

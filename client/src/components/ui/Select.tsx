@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import clsx from "clsx";
 
 interface Option {
   value: string | number;
@@ -13,11 +14,7 @@ interface SelectProps {
   placeholder?: string;
   label?: string;
   errorMessage?: string;
-  // for react-hook-form
-  name?: string;
-  onBlur?: () => void;
-  onFocus?: () => void;
-  ref?: React.Ref<any>;
+  required?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -27,6 +24,7 @@ const Select: React.FC<SelectProps> = ({
   placeholder = "Seçiniz...",
   label,
   errorMessage,
+  required = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -54,7 +52,18 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div className="relative w-full" ref={containerRef}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          className={`text-sm font-medium mb-1 flex items-center gap-px ${
+            errorMessage ? "text-red-500" : "text-gray-700"
+          }`}
+        >
+          {required && (
+            <span
+              className={clsx(errorMessage ? "text-red-500" : "text-gray-500")}
+            >
+              *
+            </span>
+          )}
           {label}
         </label>
       )}

@@ -1,6 +1,6 @@
 import { FiMenu } from "react-icons/fi";
 import { IoIosSearch } from "react-icons/io";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useProductsStore } from "../../../store/useProductsStore";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -12,9 +12,13 @@ import { FaBasketShopping } from "react-icons/fa6";
 const Header = ({
   showSidebar,
   setShowSidebar,
+  showCart,
+  setShowCart,
 }: {
   showSidebar?: boolean;
   setShowSidebar?: React.Dispatch<React.SetStateAction<boolean>>;
+  showCart?: boolean;
+  setShowCart?: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { cartItems } = useCartStore();
   const { categories, fetchCategories } = useCategoriesStore();
@@ -25,20 +29,57 @@ const Header = ({
   const [selectedCategory, setSelectedCategory] = useState<string | null | any>(
     null
   );
+  const [lastPage, setLastPage] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const location = useLocation();
-  const isHomePage = location.pathname === "/";
-  const dropdownRef = useRef<HTMLDivElement | any | null>(null);
+  const navigate = useNavigate();
 
+  const isHomePage = location.pathname === "/";
+  const isCartPage = location.pathname === "/sepetim";
+
+  const dropdownRef = useRef<HTMLDivElement | any | null>(null);
   useOutsideClick(dropdownRef, () => setOpenDropdown(false));
 
   const handleMenuClick = () => {
     setShowSidebar && setShowSidebar(!showSidebar);
   };
 
+  const handleCartClick = () => {
+    setShowCart && setShowCart(!showCart);
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (value.length > 0) {
+      if (location.pathname !== "/") {
+        setLastPage(location.pathname);
+        if (searchTerm.length < 3) return;
+        navigate("/");
+      }
+      getProductsBySearch(value);
+    } else {
+      if (lastPage && lastPage !== "/") {
+        navigate(lastPage);
+        setLastPage(null);
+      }
+      fetchProducts();
+    }
+  };
+
+  const handleCategoryClick = (categoryId: number) => {
+    if (location.pathname !== "/") {
+      setLastPage(location.pathname);
+      navigate("/");
+    }
+    getProductsByCategoryId(categoryId);
+  };
 
   return (
     <header className="flex items-center justify-between gap-4 p-4 bg-[#f6f6f6]">
@@ -51,15 +92,14 @@ const Header = ({
       </div>
 
       {/* search input */}
-      {isHomePage && (
+      {(isHomePage || isCartPage) && (
         <div className="relative flex items-center justify-center w-full shadow-md rounded-xl">
           <input
             type="text"
             placeholder="Ürün Ara..."
             className="w-full h-12 px-10 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-            onChange={(e) => {
-              getProductsBySearch(e.target.value);
-            }}
+            value={searchTerm}
+            onChange={handleSearch}
           />
 
           <IoIosSearch
@@ -88,7 +128,7 @@ const Header = ({
 
             {/* dropdown */}
             <div
-              className={`absolute right-0 top-14 bg-white shadow-lg rounded-lg w-40 overflow-y-auto h-auto transition-all duration-300 z-40 ${
+              className={`absolute right-0 top-14 bg-white shadow-lg rounded-lg w-52 overflow-y-auto h-auto transition-all duration-300 z-40 ${
                 openDropdown ? "block" : "hidden"
               }`}
             >
@@ -108,7 +148,7 @@ const Header = ({
                     key={category.id}
                     className="text-sm text-start pl-4 py-1 text-gray-800 font-semibold cursor-pointer hover:bg-[#1967d2] hover:text-white"
                     onClick={() => {
-                      getProductsByCategoryId(category.id);
+                      handleCategoryClick(category.id);
                       setOpenDropdown(false);
                       setSelectedCategory(category);
                     }}
@@ -123,8 +163,11 @@ const Header = ({
       )}
 
       {/* menu icon */}
-      {isHomePage && (
-        <div className="bg-white rounded-xl w-12 h-12 flex items-center justify-center shadow-lg text-black cursor-pointer hover:bg-gray-100 transition-all duration-300 relative select-none">
+      {(isHomePage || isCartPage) && (
+        <div
+          onClick={handleCartClick}
+          className="bg-white rounded-xl w-12 h-12 flex items-center justify-center shadow-lg text-black cursor-pointer hover:bg-gray-100 transition-all duration-300 relative select-none"
+        >
           <span>
             {cartItems.length > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold">

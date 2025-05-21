@@ -9,6 +9,7 @@ import categoriesRoutes from "./routes/categories.route.js";
 import productsRoutes from "./routes/products.route.js";
 import customersRoutes from "./routes/customers.route.js";
 import billsRoutes from "./routes/bills.route.js";
+import setsRoutes from "./routes/sets.route.js";
 
 dotenv.config();
 
@@ -61,6 +62,7 @@ app.use("/api", categoriesRoutes);
 app.use("/api", productsRoutes);
 app.use("/api", customersRoutes);
 app.use("/api", billsRoutes);
+app.use("/api", setsRoutes);
 
 //! listen to the server
 const port = process.env.PORT || 4000;

@@ -52,7 +52,7 @@ const LoginPage = () => {
       <article className="flex-[1.2] flex items-center justify-center">
         <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-lg">
           <span className="text-xl font-medium mb-4 text-center block">
-            Tekrar, Hoşgeldiniz. Giriş Yapın
+            Tekrar, hoşgeldiniz. Giriş Yapın
           </span>
 
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>

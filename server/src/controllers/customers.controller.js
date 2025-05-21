@@ -51,8 +51,38 @@ export const createCustomer = async (req, res) => {
   }
 
   const { name, surname, email, phone_number, address, tc_no } = req.body;
+
   try {
     const pool = await poolPromise;
+
+    // Check if all required fields are provided
+    const checkQuery = `SELECT * FROM customers WHERE email = @email OR phone_number = @phone_number OR tc_no = @tc_no`;
+    const checkResult = await pool
+      .request()
+      .input("email", email)
+      .input("phone_number", phone_number)
+      .input("tc_no", tc_no)
+      .query(checkQuery);
+
+    if (checkResult.recordset.length > 0) {
+      const existingCustomer = checkResult.recordset[0];
+      if (existingCustomer.email === email) {
+        return res
+          .status(400)
+          .json({ message: "Bu e-posta adresi zaten mevcut" });
+      }
+      if (existingCustomer.phone_number === phone_number) {
+        return res
+          .status(400)
+          .json({ message: "Bu telefon numarası zaten mevcut" });
+      }
+      if (existingCustomer.tc_no === tc_no) {
+        return res
+          .status(400)
+          .json({ message: "Bu TC kimlik numarası zaten mevcut" });
+      }
+    }
+
     const query = `INSERT INTO customers (name, surname, email, phone_number, address, tc_no, created_at, updated_at) OUTPUT INSERTED.* VALUES (@name, @surname, @email, @phone_number, @address, @tc_no, GETDATE(), GETDATE())`;
     const result = await pool
       .request()
@@ -87,6 +117,35 @@ export const updateCustomer = async (req, res) => {
 
   try {
     const pool = await poolPromise;
+
+    // Check if all required fields are provided
+    const checkQuery = `SELECT * FROM customers WHERE email = @email OR phone_number = @phone_number OR tc_no = @tc_no`;
+    const checkResult = await pool
+      .request()
+      .input("email", email)
+      .input("phone_number", phone_number)
+      .input("tc_no", tc_no)
+      .query(checkQuery);
+
+    if (checkResult.recordset.length > 0) {
+      const existingCustomer = checkResult.recordset[0];
+      if (existingCustomer.email === email) {
+        return res
+          .status(400)
+          .json({ message: "Bu e-posta adresi zaten mevcut" });
+      }
+      if (existingCustomer.phone_number === phone_number) {
+        return res
+          .status(400)
+          .json({ message: "Bu telefon numarası zaten mevcut" });
+      }
+      if (existingCustomer.tc_no === tc_no) {
+        return res
+          .status(400)
+          .json({ message: "Bu TC kimlik numarası zaten mevcut" });
+      }
+    }
+
     const query = `UPDATE customers SET name = @name, surname = @surname, email = @email, phone_number = @phone_number, address = @address, tc_no = @tc_no, updated_at = GETDATE() OUTPUT INSERTED.* WHERE id = @id`;
     const result = await pool
       .request()

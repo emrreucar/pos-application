@@ -17,6 +17,7 @@ interface CartStore {
   clearCart: () => void;
   getCart: () => CartItem[];
   totalPrice: () => number;
+  getTotalQuantity: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -100,6 +101,14 @@ export const useCartStore = create<CartStore>()(
 
       // Get cart items
       getCart: () => get().cartItems,
+
+      // Get total quantity
+      getTotalQuantity: () => {
+        return get().cartItems.reduce(
+          (total, item) => total + item.quantity,
+          0
+        );
+      },
     }),
     {
       name: "cart-storage",

@@ -122,10 +122,10 @@ function DataTable<T extends Record<string, any>>({
         </table>
       </div>
 
-      <div className="pt-5">
-        <span className="font-bold">{data?.length}</span> veri içerisinden{" "}
-        <span className="font-bold text-red-500">{filteredData?.length}</span>{" "}
-        veri bulundu.
+      <div className="pt-5 text-sm font-bold text-gray-800">
+        {filteredData.length > 0 && (
+          <span>{filteredData.length} veri bulundu.</span>
+        )}
       </div>
     </>
   );

@@ -14,6 +14,11 @@ export const getUsers = async (req, res) => {
 
     const users = result.recordset;
 
+    // Remove password from each user object
+    users.forEach((user) => {
+      delete user.password;
+    });
+
     res.status(200).json(users);
   } catch (error) {
     console.log("Error fetching users:", error);
@@ -96,10 +101,6 @@ export const updateUser = async (req, res) => {
       return res.status(400).json({ message: "E-posta adresi zaten mevcut" });
     }
 
-    const hashedPassword = password
-      ? await bcryptjs.hash(password, 10)
-      : undefined;
-
     const query = `
         UPDATE users 
         SET 
@@ -109,7 +110,6 @@ export const updateUser = async (req, res) => {
             phone_number = @phone_number,
             username = @username, 
             email = @email, 
-            ${hashedPassword ? "password = @password," : ""} 
             role = @role, 
             updated_at = GETDATE()
         OUTPUT inserted.* 
@@ -127,10 +127,6 @@ export const updateUser = async (req, res) => {
       .input("email", email)
       .input("role", role)
       .input("id", id);
-
-    if (hashedPassword) {
-      request.input("password", hashedPassword);
-    }
 
     const result = await request.query(query);
 

@@ -69,11 +69,20 @@ const CategoriesModal = ({
     }
   }, [selectedRow, isAddOperation]);
 
+  const resetValues = () => {
+    setValue("name", "");
+  };
+
   return (
     <Modal
       open={visible}
       title={isAddOperation ? "Kategori Ekle" : "Kategori Düzenle"}
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        if (isAddOperation) {
+          resetValues();
+        }
+      }}
       onConfirm={() => {
         handleSubmit(onSubmit)();
       }}

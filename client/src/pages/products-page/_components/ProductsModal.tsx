@@ -133,7 +133,6 @@ const ProductsModal = ({
     errors.category_id = undefined;
     errors.productImage = undefined;
 
-    setSelectedRow(null);
     setSelectedImage(null);
     setPreviewImage(null);
   };
@@ -144,7 +143,9 @@ const ProductsModal = ({
       title={isAddOperation ? "Ürün Ekle" : "Ürün Düzenle"}
       onClose={() => {
         onClose();
-        resetValues();
+        if (isAddOperation) {
+          resetValues();
+        }
       }}
       onConfirm={() => {
         handleSubmit(onSubmit)();
@@ -167,12 +168,15 @@ const ProductsModal = ({
               value={watchTitle}
               {...register("title")}
               errorMessage={errors.title?.message as string}
+              required
             />
             <Input
+              type="number"
               label="Ürün Fiyatı"
               value={watchPrice}
               {...register("price")}
               errorMessage={errors.price?.message as string}
+              required
             />
           </div>
 
@@ -187,6 +191,7 @@ const ProductsModal = ({
                 options={categoriesOptions}
                 placeholder="Kategori Ara.."
                 errorMessage={errors.category_id?.message as string}
+                required
               />
             )}
           />

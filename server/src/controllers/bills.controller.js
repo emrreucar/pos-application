@@ -38,11 +38,13 @@ export const getBills = async (req, res) => {
     // 3. tüm item'leri topluca çek
     const itemsResult = await pool.query(`SELECT 
         bi.bill_id,
-        bi.title,
         bi.quantity,
         bi.unit_price,
-        bi.quantity * bi.unit_price AS total_price
+        bi.quantity * bi.unit_price AS total_price,
+        p.title,
+        p.image_url
       FROM bill_items bi
+      JOIN products p ON bi.product_id = p.id
       WHERE bi.bill_id IN (${billIds.join(",")})
     `);
 
@@ -69,7 +71,7 @@ export const getBill = async (req, res) => {};
 // POST /bills -> Create a new bill
 export const createBill = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Yetkiniz yok!" });
+    return res.status(403).json({ message: "Yetkisiz erişim" });
   }
 
   const { customer_id, payment_method_id, cart_items } = req.body;
@@ -109,11 +111,10 @@ export const createBill = async (req, res) => {
         .request()
         .input("bill_id", billId)
         .input("product_id", item.product_id)
-        .input("title", item.title)
         .input("quantity", item.quantity)
         .input("unit_price", item.unit_price)
         .query(
-          "INSERT INTO bill_items (bill_id, product_id, title, quantity, unit_price) VALUES (@bill_id, @product_id, @title, @quantity, @unit_price)"
+          "INSERT INTO bill_items (bill_id, product_id, quantity, unit_price) VALUES (@bill_id, @product_id, @quantity, @unit_price)"
         );
     });
 
@@ -131,8 +132,15 @@ export const createBill = async (req, res) => {
     const bill = detailResult.recordset[0];
 
     const itemsResult = await pool.request().input("bill_id", billId).query(`
-                SELECT title, quantity, unit_price, quantity * unit_price AS total_price FROM bill_items WHERE bill_id = @bill_id
-            `);
+    SELECT 
+      p.*,
+      bi.quantity,
+      bi.unit_price,
+      bi.quantity * bi.unit_price AS total_price
+    FROM bill_items bi
+    JOIN products p ON bi.product_id = p.id
+    WHERE bi.bill_id = @bill_id
+`);
 
     bill.cart_items = itemsResult.recordset;
 
@@ -147,4 +155,35 @@ export const createBill = async (req, res) => {
 export const updateBill = async (req, res) => {};
 
 // DELETE /bills/:id -> Delete a bill by ID
-export const deleteBill = async (req, res) => {};
+export const deleteBill = async (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Yetkisiz erişim" });
+  }
+
+  const billId = req.params.id;
+
+  if (!billId) {
+    return res.status(400).json({ message: "Geçersiz fatura ID'si" });
+  }
+
+  try {
+    const pool = await poolPromise;
+
+    // 1. Fatura kalemlerini sil
+    await pool
+      .request()
+      .input("bill_id", billId)
+      .query("DELETE FROM bill_items WHERE bill_id = @bill_id");
+
+    // 2. Faturayı sil
+    await pool
+      .request()
+      .input("id", billId)
+      .query("DELETE FROM bills WHERE id = @id");
+
+    res.status(200).json({ message: "Fatura başarıyla silindi" });
+  } catch (error) {
+    console.log("Fatura silme hatası: ", error);
+    res.status(500).json({ message: "Fatura silme hatası!" });
+  }
+};

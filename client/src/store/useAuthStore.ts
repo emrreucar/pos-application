@@ -7,6 +7,7 @@ interface User {
   name: string;
   surname: string;
   email: string;
+  role: string;
   phone_number: string;
   company_name: string;
   username: string;
