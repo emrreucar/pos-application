@@ -39,6 +39,21 @@ export default {
           dark: "#1E293B", // Koyu tema için alternatif
         },
       },
+      // 2xl -> 1536 ve üstü
+      // xl -> 1280 ve üstü
+      // lg -> 1024 ve üstü
+      // md -> 768 ve üstü
+      // sm -> 640 ve üstü
+      // xs -> 480 ve üstü
+      screens: {
+        xs: "480px",
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+        "2xl": "1536px",
+        "3xl": "1750px",
+      },
     },
   },
   plugins: [],

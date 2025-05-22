@@ -29,13 +29,15 @@ const ProductCardItem = ({ product }: { product: Product }) => {
       </div>
 
       {/* Başlık */}
-      <h2 className="font-bold text-base mt-4 line-clamp-2 min-h-[48px]">
+      <h2 className="font-semibold text-gray-600 text-base mt-4 line-clamp-2 min-h-[48px]">
         {product.title}
       </h2>
 
       {/* Fiyat + Stok */}
       <div className="flex items-center justify-between text-sm font-medium mt-2">
-        <span>{formatCurrency(product.price)}</span>
+        <span className="text-base text-gray-900 font-bold">
+          {formatCurrency(product.price)}
+        </span>
         <span className="flex items-center gap-1 text-green-500 font-semibold">
           <Check size={15} />
           Stokta Var

@@ -10,6 +10,7 @@ import CustomersPage from "../pages/customers-page/CustomersPage";
 import UsersPage from "../pages/users-page/UsersPage";
 import CartPage from "../pages/cart-page/CartPage";
 import BillsPage from "../pages/bills-page/BillsPage";
+import StatisticsPage from "../pages/statistic-page/StatisticsPage";
 
 const Router = () => {
   return (
@@ -23,7 +24,8 @@ const Router = () => {
         <Route path="/kullanicilar" element={<UsersPage />} />
         <Route path="/sepetim" element={<CartPage />} />
         <Route path="/faturalar" element={<BillsPage />} />
-        <Route path="/ayarlar" element={<div>ayarlar sayfası</div>} />
+        <Route path="/istatistikler" element={<StatisticsPage />} />
+        {/* <Route path="/ayarlar" element={<div>ayarlar sayfası</div>} /> */}
       </Route>
 
       {/* Guest Routes */}

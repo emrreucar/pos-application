@@ -1,7 +1,6 @@
 import { ChartArea, ChartBarStacked, Home, ShoppingCart } from "lucide-react";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { FaUserGear } from "react-icons/fa6";
-import { IoIosSettings } from "react-icons/io";
 import { TbFileInvoice } from "react-icons/tb";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -50,12 +49,12 @@ const ROUTES = [
     icon: <ChartArea size={15} />,
     route: "/istatistikler",
   },
-  {
-    id: 7,
-    name: "Ayarlar",
-    icon: <IoIosSettings size={15} />,
-    route: "/ayarlar",
-  },
+  // {
+  //   id: 7,
+  //   name: "Ayarlar",
+  //   icon: <IoIosSettings size={15} />,
+  //   route: "/ayarlar",
+  // },
 ];
 
 const Sidebar = ({ showSidebar }: { showSidebar?: boolean }) => {
@@ -77,7 +76,7 @@ const Sidebar = ({ showSidebar }: { showSidebar?: boolean }) => {
 
   return (
     <aside
-      className={`bg-white flex flex-col justify-between shadow-lg rounded-xl h-full transition-all duration-300 ease-in-out overflow-hidden ${
+      className={`bg-white hidden xl:flex flex-col justify-between shadow-lg rounded-xl h-full transition-all duration-300 ease-in-out overflow-hidden ${
         showSidebar
           ? "w-64 px-4 py-6 opacity-100 scale-100"
           : "w-0 px-0 py-0 opacity-0 scale-50"

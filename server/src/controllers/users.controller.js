@@ -4,7 +4,7 @@ import bcryptjs from "bcryptjs";
 // GET /users -> Get all users
 export const getUsers = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   try {
@@ -29,7 +29,7 @@ export const getUsers = async (req, res) => {
 // GET /users/:id ->  Get a single user by ID
 export const getUser = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;
@@ -55,7 +55,7 @@ export const getUser = async (req, res) => {
 // PUT /users/:id ->  Update a user by ID
 export const updateUser = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;
@@ -147,7 +147,7 @@ export const updateUser = async (req, res) => {
 // DELETE /users/:id ->  Delete a user by ID
 export const deleteUser = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;

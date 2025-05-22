@@ -5,6 +5,7 @@ import { CheckCheckIcon, Minus, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import ConfirmDeleteModal from "../ui/ConfirmDeleteModal";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
   const [visibleDeleteModal, setVisibleDeleteModal] = useState(false);
@@ -16,7 +17,7 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
       <div
         className={`overflow-hidden bg-white shadow-lg rounded-xl h-full transition-all duration-300 ease-in-out ${
           showCart
-            ? "w-[27rem] px-4 py-6 opacity-100 scale-100"
+            ? "3xl:w-[27rem] 2xl:w-[22rem] xl:w-[18rem] hidden xl:block px-4 py-6 opacity-100 scale-100"
             : "w-0 p-0 opacity-0 scale-50"
         } `}
       >
@@ -147,6 +148,7 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
         onClose={() => setVisibleDeleteModal(false)}
         onConfirm={() => {
           clearCart();
+          toast.success("Sepetiniz temizlendi!");
           setVisibleDeleteModal(false);
         }}
         message="Sepeti temizlemek istediğinize emin misiniz?"

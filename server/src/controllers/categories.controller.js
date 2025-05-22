@@ -3,7 +3,7 @@ import { poolPromise } from "../lib/db.js";
 // GET /categories -> Get all categories
 export const getCategories = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   try {
@@ -23,7 +23,7 @@ export const getCategories = async (req, res) => {
 // GET /categories/:id -> Get a single category by ID
 export const getCategory = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;
@@ -46,7 +46,7 @@ export const getCategory = async (req, res) => {
 // POST /categories -> Create a new category
 export const createCategory = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { name } = req.body;
@@ -69,7 +69,7 @@ export const createCategory = async (req, res) => {
 // PUT /categories/:id -> Update a category by ID
 export const updateCategory = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;
@@ -101,7 +101,7 @@ export const updateCategory = async (req, res) => {
 // DELETE /categories/:id -> Delete a category by ID
 export const deleteCategory = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;

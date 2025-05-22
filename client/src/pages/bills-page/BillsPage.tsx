@@ -63,6 +63,7 @@ const BillsPage = () => {
   return (
     <>
       <Actions onPrint={handlePrintClick} onDelete={handleDeleteClick} />
+
       <DataTable
         columns={columns}
         data={bills}

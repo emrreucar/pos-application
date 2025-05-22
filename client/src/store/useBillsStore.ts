@@ -24,6 +24,7 @@ export interface CartItem {
 
 export interface Bill {
   id: number;
+  customer_id: number;
   total_amount: number;
   created_at: string;
   customer_name_surname: string;
@@ -31,8 +32,14 @@ export interface Bill {
   cart_items: CartItem[];
 }
 
+interface ReportProduct {
+  product_id: number;
+  title: string;
+  total_sold: number;
+}
 interface BillState {
-  bills: any[];
+  bills: Bill[];
+  reportProducts: ReportProduct[];
   loading: boolean;
   error: string | null;
 
@@ -40,10 +47,13 @@ interface BillState {
   createBill: (bill: any) => Promise<void>;
   deleteBill: (billId: number) => Promise<void>;
   // updateBill: (bill: any, id: number) => Promise<void>;
+
+  getReportProducts: () => Promise<void>;
 }
 
 export const useBillsStore = create<BillState>((set) => ({
   bills: [],
+  reportProducts: [],
   loading: false,
   error: null,
 
@@ -102,5 +112,18 @@ export const useBillsStore = create<BillState>((set) => ({
       set({ loading: false, error: "Fatura silinirken hata oluştu." });
     }
   },
-  // updateBill: async (bill: any, id: number) => {},
+
+  getReportProducts: async () => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.get("/bills/report/products");
+
+      set({ reportProducts: response.data });
+
+      set({ loading: false });
+    } catch (error) {
+      console.log("Ürün raporu alınırken hata oluştu:", error);
+      set({ loading: false, error: "Ürün raporu alınırken hata oluştu." });
+    }
+  },
 }));

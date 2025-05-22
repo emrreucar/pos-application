@@ -13,6 +13,7 @@ export const getBills = async (req, res) => {
     const query = `
         SELECT 
             b.id,
+            b.customer_id,
             b.total_amount,
             FORMAT(b.created_at, 'yyyy-MM-dd HH:mm') AS created_at,
             c.name + ' ' + c.surname AS customer_name_surname,
@@ -71,7 +72,7 @@ export const getBill = async (req, res) => {};
 // POST /bills -> Create a new bill
 export const createBill = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Yetkisiz erişim" });
+    return res.status(403).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { customer_id, payment_method_id, cart_items } = req.body;
@@ -157,7 +158,7 @@ export const updateBill = async (req, res) => {};
 // DELETE /bills/:id -> Delete a bill by ID
 export const deleteBill = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Yetkisiz erişim" });
+    return res.status(403).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const billId = req.params.id;
@@ -185,5 +186,36 @@ export const deleteBill = async (req, res) => {
   } catch (error) {
     console.log("Fatura silme hatası: ", error);
     res.status(500).json({ message: "Fatura silme hatası!" });
+  }
+};
+
+// GET /bills/report/products -> Get product report
+export const getProductReport = async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Yetkiniz yok!" });
+  }
+
+  try {
+    const pool = await poolPromise;
+
+    // 1. Ürün raporunu al
+    const query = `
+      SELECT 
+        bi.product_id,
+        p.title,
+        SUM(bi.quantity) AS total_sold
+      FROM bill_items bi
+      JOIN products p ON bi.product_id = p.id
+      GROUP BY bi.product_id, p.title
+      ORDER BY total_sold DESC
+    `;
+
+    const result = await pool.request().query(query);
+    const productReport = result.recordset;
+
+    res.status(200).json(productReport);
+  } catch (error) {
+    console.log("Ürün raporu alırken hata: ", error);
+    return res.status(500).json({ message: "Ürün raporu alırken hata!" });
   }
 };

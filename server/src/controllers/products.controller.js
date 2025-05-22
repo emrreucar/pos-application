@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 // GET /products -> Get all products
 export const getProducts = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   try {
@@ -27,7 +27,7 @@ export const getProducts = async (req, res) => {
 // GET /products/:id -> Get a single product by ID
 export const getProduct = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;
@@ -53,7 +53,7 @@ export const getProduct = async (req, res) => {
 // POST /products -> Create a new product
 export const createProduct = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { category_id, title, price } = req.body;
@@ -137,7 +137,7 @@ export const createProduct = async (req, res) => {
 // PUT /products/:id -> Update a product by ID
 export const updateProduct = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;
@@ -247,7 +247,7 @@ export const updateProduct = async (req, res) => {
 // DELETE /products/:id -> Delete a product by ID
 export const deleteProduct = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;
@@ -293,7 +293,7 @@ export const deleteProduct = async (req, res) => {
 // GET /products/category/:categoryId -> Get products by category ID
 export const getProductsByCategory = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { categoryId } = req.params;
@@ -328,7 +328,7 @@ export const getProductsByCategory = async (req, res) => {
 // GET /search-products -> Search products by name and category
 export const getProductsBySearch = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { search } = req.query;

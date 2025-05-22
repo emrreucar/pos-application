@@ -4,6 +4,7 @@ import {
   deleteBill,
   getBill,
   getBills,
+  getProductReport,
   updateBill,
 } from "../controllers/bills.controller.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
@@ -15,5 +16,7 @@ router.get("/bills/:id", verifyToken, getBill);
 router.post("/bills", verifyToken, createBill);
 router.put("/bills/:id", verifyToken, updateBill);
 router.delete("/bills/:id", verifyToken, deleteBill);
+
+router.get("/bills/report/products", verifyToken, getProductReport);
 
 export default router;

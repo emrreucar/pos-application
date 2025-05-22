@@ -3,7 +3,7 @@ import { poolPromise } from "../lib/db.js";
 // GET /customers -> Get all customers
 export const getCustomers = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   try {
@@ -23,7 +23,7 @@ export const getCustomers = async (req, res) => {
 // GET /customers/:id -> Get a single customer by ID
 export const getCustomer = async (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;
@@ -47,7 +47,7 @@ export const getCustomer = async (req, res) => {
 // POST /customers -> Create a new customer
 export const createCustomer = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { name, surname, email, phone_number, address, tc_no } = req.body;
@@ -109,7 +109,7 @@ export const createCustomer = async (req, res) => {
 // PUT /customers/:id -> Update a customer by ID
 export const updateCustomer = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;
@@ -173,7 +173,7 @@ export const updateCustomer = async (req, res) => {
 // DELETE /customers/:id -> Delete a customer by ID
 export const deleteCustomer = async (req, res) => {
   if (req.user.role !== "admin") {
-    return res.status(401).json({ message: "Yetkisiz Erişim" });
+    return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
   const { id } = req.params;

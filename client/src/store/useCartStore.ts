@@ -96,7 +96,6 @@ export const useCartStore = create<CartStore>()(
       // Clear cart
       clearCart: () => {
         set({ cartItems: [] });
-        toast.success("Sepet temizlendi!");
       },
 
       // Get cart items
