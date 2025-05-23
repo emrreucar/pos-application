@@ -63,14 +63,13 @@ const Header = ({
         if (searchTerm.length < 3) return;
         navigate("/");
       }
-      getProductsBySearch(value);
     } else {
       if (lastPage && lastPage !== "/") {
         navigate(lastPage);
         setLastPage(null);
       }
-      fetchProducts();
     }
+    getProductsBySearch(value);
   };
 
   const handleCategoryClick = (categoryId: number) => {
@@ -85,7 +84,7 @@ const Header = ({
     <header className="flex items-center justify-between gap-4 p-4 bg-[#f6f6f6]">
       {/* menu icon */}
       <div
-        className="bg-white rounded-xl w-12 h-12 flex items-center justify-center shadow-lg text-black cursor-pointer hover:bg-gray-100 transition-all duration-300"
+        className="bg-white rounded-xl w-12 h-12 xl:flex items-center justify-center shadow-lg text-black cursor-pointer hover:bg-gray-100 transition-all duration-300 hidden"
         onClick={handleMenuClick}
       >
         <FiMenu size={25} />

@@ -88,8 +88,8 @@ const ConfirmOrderModal = ({
       onConfirm={() => {
         handleSubmit(onSubmit)();
       }}
-      height="h-[40vh]"
-      width="max-w-[35%]"
+      height="lg:h-[40vh] h-[60vh]"
+      width="lg:max-w-[35%] sm:max-w-[60%] max-w-[90%]"
     >
       <form
         className="flex-1 overflow-y-auto  h-full px-1 flex flex-col justify-between"

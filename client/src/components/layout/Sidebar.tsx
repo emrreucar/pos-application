@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useUsersStore } from "../../store/useUsersStore";
 
-const ROUTES = [
+export const ROUTES = [
   {
     id: 1,
     name: "Anasayfa",

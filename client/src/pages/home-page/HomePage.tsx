@@ -15,7 +15,9 @@ const HomePage = () => {
   }, []);
 
   const productGridCols =
-    !showSidebar && !showCart ? "2xl:grid-cols-5" : "2xl:grid-cols-5";
+    !showSidebar &&
+    !showCart &&
+    "3xl:grid-cols-7 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 xs:grid-cols-1";
 
   // 3xl -> 1750px ve üstü
   // 2xl -> 1536 ve üstü
@@ -34,7 +36,7 @@ const HomePage = () => {
 
       {!loading && products.length > 0 && (
         <ul
-          className={`grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 gap-4`}
+          className={`grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 ${productGridCols} gap-4`}
         >
           {products.map((product) => (
             <ProductCardItem key={product.id} product={product} />

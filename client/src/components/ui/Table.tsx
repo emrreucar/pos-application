@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useUIContext } from "../../context/UIContext";
 
 type Column<T> = {
   key: keyof T;
@@ -19,6 +20,8 @@ function DataTable<T extends Record<string, any>>({
   selectedRow,
   onRowClick,
 }: Props<T>) {
+  const { showSidebar } = useUIContext();
+
   const [filters, setFilters] = useState<Record<string, string>>({});
 
   const filteredData = useMemo(() => {
@@ -37,8 +40,12 @@ function DataTable<T extends Record<string, any>>({
 
   return (
     <>
-      <div className="overflow-auto base__card__container !p-0 h-[calc(100vh_-_250px)] overflow-y-auto">
-        <table className="min-w-full text-sm text-left text-gray-800">
+      <div
+        className={`overflow-x-auto w-screen xl:w-[calc(100vw_-_300px)] base__card__container !p-0 h-[calc(100vh_-_250px)] ${
+          !showSidebar && "!w-full"
+        }`}
+      >
+        <table className="text-sm text-left text-gray-800 divide-y divide-gray-200 min-w-full">
           <thead className="bg-gray-800 text-white">
             <tr>
               {columns.map((col) => (

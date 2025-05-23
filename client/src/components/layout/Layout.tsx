@@ -3,6 +3,7 @@ import Sidebar from "./Sidebar";
 import Header from "../../pages/home-page/_components/Header";
 import { useLocation } from "react-router-dom";
 import OrdersSummary from "../cart/OrdersSummary";
+import Navigation from "./Navigation";
 
 const Layout = ({
   children,
@@ -21,9 +22,11 @@ const Layout = ({
   const isHomePage = location.pathname === "/";
 
   return (
-    <section className="flex h-screen w-full bg-[#f6f6f6]">
+    <section className="flex h-screen w-full overflow-hidden bg-[#f6f6f6]">
       {/* sidebar */}
       <Sidebar showSidebar={showSidebar} />
+
+      <Navigation />
 
       {/* main content + cart wrapper */}
       <div className="flex flex-1 h-full">

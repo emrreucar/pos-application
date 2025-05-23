@@ -49,41 +49,47 @@ const StatisticsPage = () => {
   const { user } = useAuthStore();
 
   return (
-    <div className="space-y-6">
-      <div className="text-2xl font-bold">
-        <span>Hoşgeldin</span>
-        <span className="text-primary">
-          {" "}
-          {user?.name + " " + user?.surname}{" "}
-        </span>
-      </div>
+    <>
+      <div className="">
+        <h2 className="lg:hidden block mb-5 text-3xl font-bold">
+          İstatistikler
+        </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
-        {DATA.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-2 px-4 py-6 bg-secondary rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 ease-in-out text-white"
-          >
-            <img
-              src={item.imgUrl}
-              alt={item.imgUrl + item.id}
-              className="object-cover w-16 h-16 rounded-full bg-white p-2"
-            />
-            <div className="flex flex-col gap-2">
-              <h3 className="text-lg font-semibold text-gray-300">
-                {item.name}
-              </h3>
-              <p className="text-white">{item.value}</p>
+        <div className="text-2xl font-bold">
+          <span>Hoşgeldin</span>
+          <span className="text-primary">
+            {" "}
+            {user?.name + " " + user?.surname}{" "}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
+          {DATA.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-center gap-2 px-4 py-6 bg-secondary rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 ease-in-out text-white"
+            >
+              <img
+                src={item.imgUrl}
+                alt={item.imgUrl + item.id}
+                className="object-cover w-16 h-16 rounded-full bg-white p-2"
+              />
+              <div className="flex flex-col gap-2">
+                <h3 className="text-lg font-semibold text-gray-300">
+                  {item.name}
+                </h3>
+                <p className="text-white">{item.value}</p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="flex flex-col lg:flex-row items-start justify-center gap-5 mt-6">
-        <PieChart />
-        <AreaChart />
+        <div className="flex flex-col lg:flex-row items-start justify-center gap-5 mt-6">
+          <PieChart />
+          <AreaChart />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

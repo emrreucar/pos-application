@@ -35,7 +35,7 @@ const UsersModal = ({
   selectedRow: User | null;
   setSelectedRow: (row: User | null | any) => void;
 }) => {
-  const { createUser, updateUser, loading } = useUsersStore();
+  const { updateUser, loading } = useUsersStore();
 
   const {
     register,
@@ -68,7 +68,7 @@ const UsersModal = ({
       };
 
       if (isAddOperation) {
-        await createUser(payload as User);
+        console.log("add operation");
       } else {
         await updateUser(payload as User, selectedRow?.id as number);
       }
@@ -139,9 +139,10 @@ const UsersModal = ({
         handleSubmit(onSubmit)();
       }}
       loading={loading}
+      width="max-w-[90%] md:max-w-2xl"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Input
             label="Kullanıcı Adı"
             value={watchUsername}
@@ -162,7 +163,7 @@ const UsersModal = ({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             type="text"
             label="Şirket Adı"
@@ -178,7 +179,7 @@ const UsersModal = ({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Email"
             value={watchEmail as string}

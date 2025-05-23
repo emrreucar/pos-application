@@ -62,6 +62,8 @@ const BillsPage = () => {
 
   return (
     <>
+      <h2 className="lg:hidden block mb-5 text-3xl font-bold">Faturalar</h2>
+
       <Actions onPrint={handlePrintClick} onDelete={handleDeleteClick} />
 
       <DataTable

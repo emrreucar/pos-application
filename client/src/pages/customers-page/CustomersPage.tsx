@@ -78,6 +78,7 @@ const CustomersPage = () => {
 
   return (
     <>
+      <h2 className="lg:hidden block mb-5 text-3xl font-bold">Müşteriler</h2>
       <Actions
         onAdd={handleAddClick}
         onEdit={handleEditClick}

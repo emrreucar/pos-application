@@ -8,7 +8,7 @@ const PreviewCard = ({
   price: string;
 }) => {
   return (
-    <div className="flex flex-col w-1/3 h-full">
+    <div className="flex flex-col w-full lg:w-1/3 h-full">
       <span className="block text-center mb-2">Ürün Ön İzlemesi</span>
       <div className="p-4 border rounded-lg shadow-md w-full relative">
         <img

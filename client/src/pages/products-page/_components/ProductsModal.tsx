@@ -151,10 +151,10 @@ const ProductsModal = ({
         handleSubmit(onSubmit)();
       }}
       loading={loading}
-      height="h-[50vh]"
-      width="max-w-[50%]"
+      height="lg:h-[50vh] h-[80vh]"
+      width="xl:max-w-[50%] max-w-[90%]"
     >
-      <section className="flex justify-between gap-10">
+      <section className="flex flex-col lg:flex-row justify-between gap-10">
         <PreviewCard
           image={previewImage}
           title={watchTitle}
@@ -162,7 +162,7 @@ const ProductsModal = ({
         />
 
         <form className="space-y-4 w-full" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
             <Input
               label="Ürün Adı"
               value={watchTitle}

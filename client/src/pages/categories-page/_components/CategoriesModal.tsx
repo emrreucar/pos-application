@@ -87,6 +87,7 @@ const CategoriesModal = ({
         handleSubmit(onSubmit)();
       }}
       loading={loading}
+      width="max-w-[90%] md:max-w-2xl"
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input

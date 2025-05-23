@@ -134,9 +134,10 @@ const CustomersModal = ({
         handleSubmit(onSubmit)();
       }}
       loading={loading}
+      width="max-w-[90%] md:max-w-2xl"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Adı"
             value={watchName}
@@ -150,7 +151,7 @@ const CustomersModal = ({
             errorMessage={errors.surname?.message as string}
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Email"
             value={watchEmail as string}

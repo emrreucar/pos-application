@@ -75,6 +75,7 @@ const UsersPage = () => {
 
   return (
     <>
+      <h2 className="lg:hidden block mb-5 text-3xl font-bold">Kullanıcılar</h2>
       <Actions onEdit={handleEditClick} onDelete={handleDeleteClick} />
       <DataTable
         columns={columns}

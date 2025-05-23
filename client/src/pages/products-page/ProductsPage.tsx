@@ -74,6 +74,7 @@ const ProductsPage = () => {
 
   return (
     <>
+      <h2 className="lg:hidden block mb-5 text-3xl font-bold">Ürünler</h2>
       <Actions
         onAdd={handleAddClick}
         onEdit={handleEditClick}

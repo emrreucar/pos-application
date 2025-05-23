@@ -1,11 +1,15 @@
-import { Check } from "lucide-react";
 import { Product } from "../../../store/useProductsStore";
 import { formatCurrency } from "../../../lib/utils";
 import { FiPlus } from "react-icons/fi";
 import { useCartStore } from "../../../store/useCartStore";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { FaMinus, FaPlus } from "react-icons/fa6";
 
 const ProductCardItem = ({ product }: { product: Product }) => {
-  const { addToCart, cartItems } = useCartStore();
+  const { addToCart, cartItems, changeQuantity, removeFromCart } =
+    useCartStore();
+
+  const insertedProduct = cartItems.find((item) => item.id === product.id);
 
   return (
     <li className="bg-white shadow-md rounded-2xl p-4 relative hover:shadow-lg transition-shadow duration-300 ease-in-out flex flex-col">
@@ -20,12 +24,6 @@ const ProductCardItem = ({ product }: { product: Product }) => {
           alt={product.title}
           className="max-h-full max-w-full object-contain"
         />
-
-        {/* Kategori etiketi */}
-        {/* <span className="absolute top-0 right-0 bg-primary text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-          <IoIosCheckmarkCircleOutline size={14} />
-          {product.category_name}
-        </span> */}
       </div>
 
       {/* Başlık */}
@@ -34,34 +32,66 @@ const ProductCardItem = ({ product }: { product: Product }) => {
       </h2>
 
       {/* Fiyat + Stok */}
-      <div className="flex items-center justify-between text-sm font-medium mt-2">
-        <span className="text-base text-gray-900 font-bold">
+      <div className="flex items-center justify-between text-xs font-medium mt-2">
+        <span
+          className={`text-base text-gray-900 font-bold ${
+            insertedProduct ? "mb-4" : ""
+          }`}
+        >
           {formatCurrency(product.price)}
         </span>
-        <span className="flex items-center gap-1 text-green-500 font-semibold">
-          <Check size={15} />
+        <span className="flex items-center gap-1 font-semibold absolute right-2 top-2 shadow-md rounded-full px-2 py-1 bg-green-500 text-white">
+          <FaRegCheckCircle size={15} />
           Stokta Var
         </span>
+        {/* <span className="flex items-center gap-1 font-semibold absolute right-2 top-2 shadow-md rounded-full px-2 py-1 bg-red-500 text-white">
+          <FaCircleExclamation size={13} />
+          Son 5 Adet
+        </span> */}
       </div>
 
       {/* + Butonu */}
-      <div
-        className="mt-auto flex justify-end pt-4 select-none w-fit ml-auto"
-        onClick={() => addToCart(product)}
-      >
-        {cartItems.some((item) => item.id === product.id) ? (
-          <button
-            className="w-9 h-9 flex items-center justify-center rounded-md bg-green-500 text-white cursor-not-allowed"
-            disabled
-          >
-            <Check size={20} />
-          </button>
-        ) : (
+      {!insertedProduct && (
+        <div
+          className={`mt-auto flex justify-end pt-4 select-none ml-auto ${
+            insertedProduct === undefined ? "w-fit" : "w-full"
+          }`}
+          onClick={() => addToCart(product)}
+        >
           <div className="w-9 h-9 flex items-center justify-center rounded-md bg-primary text-white cursor-pointer hover:bg-primary-dark transition-colors duration-300 ease-in-out">
             <FiPlus size={20} />
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {insertedProduct && (
+        <div className="w-full h-9 mt-auto flex items-center justify-between rounded-lg bg-transparent text-black border border-primary-light cursor-pointer transition-colors duration-300 ease-in-out select-none">
+          <div
+            className="bg-primary-light hover:bg-primary transition-all duration-200 h-9 w-9 rounded-l-lg flex items-center justify-center"
+            onClick={() => {
+              if (insertedProduct.quantity > 1) {
+                changeQuantity(
+                  insertedProduct.id,
+                  insertedProduct.quantity - 1
+                );
+              } else {
+                removeFromCart(insertedProduct.id);
+              }
+            }}
+          >
+            <FaMinus size={15} color="white" />
+          </div>
+          <span className="font-semibold">{insertedProduct.quantity} Adet</span>
+          <div
+            className="bg-primary-light hover:bg-primary transition-all duration-200 h-9 w-9 rounded-r-lg flex items-center justify-center"
+            onClick={() => {
+              changeQuantity(insertedProduct.id, insertedProduct.quantity + 1);
+            }}
+          >
+            <FaPlus size={15} color="white" />
+          </div>
+        </div>
+      )}
     </li>
   );
 };

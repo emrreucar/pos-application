@@ -3,6 +3,7 @@ import { formatCurrency } from "../../lib/utils";
 import { Minus, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import ConfirmOrderModal from "./_components/ConfirmOrderModal";
+import { CiTrash } from "react-icons/ci";
 
 const CartPage = () => {
   const [visibleModal, setVisibleModal] = useState(false);
@@ -64,7 +65,7 @@ const CartPage = () => {
                         {item.quantity > 1 ? (
                           <Minus size={15} />
                         ) : (
-                          <Trash size={15} />
+                          <CiTrash size={20} />
                         )}
                       </span>
                       <span> {item.quantity} </span>
@@ -77,16 +78,24 @@ const CartPage = () => {
                         <Plus size={15} />
                       </span>
                     </div>
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="ml-auto text-red-500 hover:underline text-sm"
-                    >
-                      Kaldır
-                    </button>
                   </div>
                 </div>
-                <div className="font-bold text-md">
-                  {formatCurrency(item.product.price * item.quantity)}
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-base">
+                    {formatCurrency(item.product.price * item.quantity)}
+                  </span>
+                  <span
+                    title="Ürünü Sepetten Çıkar"
+                    onClick={() => {
+                      removeFromCart(item.id);
+                    }}
+                  >
+                    <CiTrash
+                      color="#ff0000"
+                      size={20}
+                      className="cursor-pointer hover:text-red-600 transition-colors duration-200 ease-in-out"
+                    />
+                  </span>
                 </div>
               </div>
             ))}
