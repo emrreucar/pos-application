@@ -102,7 +102,7 @@ const CustomersPage = () => {
         open={visibleDeleteModal}
         onClose={() => setVisibleDeleteModal(false)}
         onConfirm={handleDeleteConfirm}
-        message="Bu müşteri kaydını silmek istediğinize emin misiniz?"
+        message="Dikkat! Bu müşteri kaydını sildiğinizde, bu müşteri ile ilişkili tüm veriler de silinecektir. Devam etmek istediğinize emin misiniz?"
       />
     </>
   );

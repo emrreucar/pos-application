@@ -118,6 +118,8 @@ const CustomersModal = ({
     errors.surname = undefined;
     errors.email = undefined;
     errors.tc_no = undefined;
+    errors.phone_number = undefined;
+    errors.address = undefined;
   };
 
   return (
@@ -143,12 +145,14 @@ const CustomersModal = ({
             value={watchName}
             {...register("name")}
             errorMessage={errors.name?.message as string}
+            required
           />
           <Input
             label="Soyadı"
             value={watchSurname}
             {...register("surname")}
             errorMessage={errors.surname?.message as string}
+            required
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -157,6 +161,7 @@ const CustomersModal = ({
             value={watchEmail as string}
             {...register("email")}
             errorMessage={errors.email?.message as string}
+            required
           />
           <Input
             type="text"
@@ -165,6 +170,7 @@ const CustomersModal = ({
             {...register("phone_number")}
             onChange={handlePhoneChange}
             errorMessage={errors.phone_number?.message as string}
+            required
           />
         </div>
         <Input
@@ -172,6 +178,7 @@ const CustomersModal = ({
           value={watchAddress as string}
           {...register("address")}
           errorMessage={errors.address?.message as string}
+          required
         />
         <Input
           type="number"
@@ -185,6 +192,7 @@ const CustomersModal = ({
               setValue("tc_no", value, { shouldValidate: true });
             }
           }}
+          required
         />
       </form>
     </Modal>

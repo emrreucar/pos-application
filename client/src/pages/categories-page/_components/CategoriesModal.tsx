@@ -95,6 +95,7 @@ const CategoriesModal = ({
           value={watchCategoryName}
           {...register("name")}
           errorMessage={errors.name?.message}
+          required
         />
       </form>
     </Modal>

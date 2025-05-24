@@ -17,7 +17,7 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
       <div
         className={`overflow-hidden bg-white shadow-lg rounded-xl h-full transition-all duration-300 ease-in-out ${
           showCart
-            ? "3xl:w-[27rem] 2xl:w-[22rem] xl:w-[18rem] hidden xl:block px-4 py-6 opacity-100 scale-100"
+            ? "2xl:w-[25rem] w-[23rem] hidden xl:block px-4 py-6 opacity-100 scale-100"
             : "w-0 p-0 opacity-0 scale-50"
         } `}
       >

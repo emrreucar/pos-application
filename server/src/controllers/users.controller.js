@@ -111,6 +111,7 @@ export const updateUser = async (req, res) => {
             username = @username, 
             email = @email, 
             role = @role, 
+            ${password ? "password = @password," : ""}
             updated_at = GETDATE()
         OUTPUT inserted.* 
         WHERE id = @id
@@ -127,6 +128,11 @@ export const updateUser = async (req, res) => {
       .input("email", email)
       .input("role", role)
       .input("id", id);
+
+    if (password) {
+      const hashedPassword = await bcryptjs.hash(password, 10);
+      request.input("password", hashedPassword);
+    }
 
     const result = await request.query(query);
 

@@ -1,4 +1,4 @@
-import { poolPromise } from "../lib/db.js";
+import { mssql, poolPromise } from "../lib/db.js";
 
 // GET /bills -> Get all bills
 export const getBills = async (req, res) => {
@@ -88,6 +88,30 @@ export const createBill = async (req, res) => {
 
   try {
     const pool = await poolPromise;
+    // transaction amacı -> Tüm işlemlerin otomatik olarak ya hepsinin başarılı olması ya da hepsinin geri alınması
+    // örnek -> fatura kalemlerini eklerken bir sorun çıkarsa, faturayı ve kalemlerini geri al
+    const transaction = new mssql.Transaction(pool);
+    await transaction.begin();
+
+    // *** TÜM STOĞU KONTROL ET ***
+    for (const item of cart_items) {
+      const stockCheckResult = await transaction
+        .request()
+        .input("product_id", item.product_id)
+        .query("SELECT stock, title FROM products WHERE id = @product_id");
+
+      const currentStock = stockCheckResult.recordset[0]?.stock || 0;
+      const productTitle =
+        stockCheckResult.recordset[0]?.title || "Bilinmeyen Ürün";
+
+      if (currentStock < item.quantity) {
+        // rollback amacı -> transaction'da bir sorun varsa, tüm işlemleri geri al
+        await transaction.rollback();
+        return res.status(400).json({
+          message: `Ürün stoğu yetersiz. Lütfen "${productTitle}" ürününün stok miktarını kontrol edin.`,
+        });
+      }
+    }
 
     // 1. Toplam tutar hesapla
     const totalAmount = cart_items.reduce((sum, item) => {
@@ -106,9 +130,10 @@ export const createBill = async (req, res) => {
 
     const billId = billResult.recordset[0].id;
 
-    // 3. Fatura kalemlerini ekle
-    const insertQueries = cart_items.map((item) => {
-      return pool
+    // 3. Fatura kalemlerini ekle ve ürün stoklarını güncelle
+    for (const item of cart_items) {
+      // fatura kalemlerini ekle
+      await transaction
         .request()
         .input("bill_id", billId)
         .input("product_id", item.product_id)
@@ -117,11 +142,22 @@ export const createBill = async (req, res) => {
         .query(
           "INSERT INTO bill_items (bill_id, product_id, quantity, unit_price) VALUES (@bill_id, @product_id, @quantity, @unit_price)"
         );
-    });
 
-    await Promise.all(insertQueries);
+      // ürün stoğunu düşür
+      await transaction
+        .request()
+        .input("product_id", item.product_id)
+        .input("quantity", item.quantity)
+        .query(
+          `UPDATE products SET stock = stock - @quantity WHERE id = @product_id`
+        );
+    }
 
-    // 4. Fatura oluşturulduktan sonra, fatura bilgilerini döndür
+    // 4. transaction commit
+    // amacı -> tüm işlemler başarılıysa, veritabanına kaydet.
+    await transaction.commit();
+
+    // 5. fatura bilgilerini döndür
     const detailResult = await pool.request().input("id", billId).query(`
             SELECT b.id, b.total_amount, c.name + ' ' + c.surname AS customer_name_surname, 
             pm.name AS payment_method FROM bills b 
@@ -132,6 +168,7 @@ export const createBill = async (req, res) => {
 
     const bill = detailResult.recordset[0];
 
+    // 6. fatura kalemlerini ekle
     const itemsResult = await pool.request().input("bill_id", billId).query(`
     SELECT 
       p.*,
@@ -148,6 +185,9 @@ export const createBill = async (req, res) => {
     res.status(201).json(bill);
   } catch (error) {
     console.log("Fatura oluşturma hatası: ", error);
+
+    // transaction rollback
+    if (transaction) await transaction.rollback();
     res.status(500).json({ message: "Fatura oluşturma hatası!" });
   }
 };

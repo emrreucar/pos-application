@@ -42,8 +42,8 @@ const PieChart = () => {
 
   const data = {
     labels: reportProducts.map((product) =>
-      product.title.length > 10
-        ? product.title.slice(0, 10) + "..."
+      product.title.length > 20
+        ? product.title.slice(0, 20) + "..."
         : product.title
     ),
     datasets: [
@@ -73,7 +73,7 @@ const PieChart = () => {
   };
 
   return (
-    <div className="max-w-md bg-white shadow p-4 rounded-xl w-full">
+    <div className="max-w-full md:max-w-sm bg-white shadow p-4 rounded-xl w-full">
       <h2 className="text-lg font-semibold mb-4 text-center">
         Ürün Satış Dağılımı
       </h2>

@@ -49,12 +49,6 @@ export const ROUTES = [
     icon: <ChartArea size={15} />,
     route: "/istatistikler",
   },
-  // {
-  //   id: 7,
-  //   name: "Ayarlar",
-  //   icon: <IoIosSettings size={15} />,
-  //   route: "/ayarlar",
-  // },
 ];
 
 const Sidebar = ({ showSidebar }: { showSidebar?: boolean }) => {
@@ -114,6 +108,12 @@ const Sidebar = ({ showSidebar }: { showSidebar?: boolean }) => {
               </span>
             </Link>
           ))}
+          <button
+            className="items-center gap-3 px-4 py-2 rounded-full transition-all duration-300 text-danger hover:bg-danger hover:text-white font-bold text-center block mt-5"
+            onClick={handleLogout}
+          >
+            Çıkış Yap
+          </button>
         </nav>
       </article>
 
@@ -124,17 +124,6 @@ const Sidebar = ({ showSidebar }: { showSidebar?: boolean }) => {
             {" "}
             {findUser?.company_name || user?.company_name}{" "}
           </span>
-        </div>
-        {/* PROFILE - LOGOUT */}
-        <div className="border-t pt-4 mt-6 px-2 flex items-center justify-between text-sm text-gray-600">
-          <button className="hover:text-primary font-medium">Profil</button>
-          <span className="text-gray-400">•</span>
-          <button
-            className="hover:text-red-500 font-medium"
-            onClick={handleLogout}
-          >
-            Çıkış Yap
-          </button>
         </div>
       </div>
     </aside>

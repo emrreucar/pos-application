@@ -11,6 +11,8 @@ export interface Product {
   title: string;
   price: number;
   category_name: string;
+  stock: number;
+  status: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -113,7 +115,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
       };
 
       set((state) => ({
-        products: [...state.products, formattedData],
+        products: [formattedData, ...state.products],
         loading: false,
       }));
 
@@ -177,7 +179,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
     }
   },
 
-  // Delete a product by ID
+  // Status: passive
   deleteProduct: async (id: number) => {
     try {
       set({ loading: true, error: null });
@@ -185,16 +187,18 @@ export const useProductsStore = create<ProductsState>((set) => ({
       await axiosInstance.delete(`/products/${id}`);
 
       set((state) => ({
-        products: state.products.filter((item) => item.id !== id),
+        products: state.products.map((item) =>
+          item.id === id ? { ...item, status: false } : item
+        ),
         loading: false,
       }));
 
-      toast.success("Ürün başarıyla silindi.");
+      toast.success("Ürün durumu pasife çekildi.");
     } catch (error: any) {
-      console.log("Ürün silerken hata oluştu:", error);
-      set({ loading: false, error: "Ürün silerken hata oluştu." });
+      console.log("Ürün pasife çekilirken hata oluştu:", error);
+      set({ loading: false, error: "Ürün pasife çekilirken hata oluştu." });
       toast.error(
-        error?.response?.data?.message || "Ürün silerken hata oluştu."
+        error?.response?.data?.message || "Ürün pasife çekilirken hata oluştu."
       );
     }
   },

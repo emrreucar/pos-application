@@ -48,19 +48,32 @@ const StatisticsPage = () => {
   ];
   const { user } = useAuthStore();
 
+  const greeting = () => {
+    const currentHour = new Date().getHours();
+    if (currentHour < 12) {
+      return "Günaydın";
+    } else if (currentHour < 18) {
+      return "İyi Günler";
+    } else {
+      return "İyi Akşamlar";
+    }
+  };
+
   return (
     <>
-      <div className="">
+      <div className="pb-20 lg:pb-0">
         <h2 className="lg:hidden block mb-5 text-3xl font-bold">
           İstatistikler
         </h2>
 
         <div className="text-2xl font-bold">
-          <span>Hoşgeldin</span>
+          <span>Merhaba, </span>
           <span className="text-primary">
             {" "}
-            {user?.name + " " + user?.surname}{" "}
+            {user?.name + " " + user?.surname}
           </span>
+          {"."}
+          <span> {greeting()} </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">

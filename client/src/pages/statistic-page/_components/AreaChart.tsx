@@ -71,7 +71,7 @@ const AreaChart = () => {
   };
 
   return (
-    <div className="max-w-4xl w-full bg-white shadow rounded-xl p-4">
+    <div className="max-w-full lg:max-w-xl w-full bg-white shadow rounded-xl p-4">
       <h2 className="text-lg font-semibold mb-4 text-center">
         Müşteri Bazlı Satış Grafiği
       </h2>

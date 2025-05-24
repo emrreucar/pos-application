@@ -12,7 +12,8 @@ export const getProducts = async (req, res) => {
 
   try {
     const pool = await poolPromise;
-    const query = `SELECT p.*, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id`;
+
+    const query = `SELECT p.*, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC`;
     const result = await pool.request().query(query);
 
     const products = result.recordset;
@@ -56,12 +57,13 @@ export const createProduct = async (req, res) => {
     return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
   }
 
-  const { category_id, title, price } = req.body;
+  const { category_id, title, price, stock } = req.body;
 
   const missingFields = [];
   if (!category_id) missingFields.push("category_id");
   if (!title) missingFields.push("title");
   if (!price) missingFields.push("price");
+  if (!stock) missingFields.push("stock");
 
   if (missingFields.length > 0) {
     return res
@@ -96,8 +98,8 @@ export const createProduct = async (req, res) => {
 
     const pool = await poolPromise;
     const insertQuery = `
-    INSERT INTO products (category_id, title, price, image_url, created_at, updated_at) OUTPUT INSERTED.id 
-    VALUES (@category_id, @title, @price, @image_url, GETDATE(), GETDATE())`;
+    INSERT INTO products (category_id, title, price, image_url, stock, created_at, updated_at) OUTPUT INSERTED.id 
+    VALUES (@category_id, @title, @price, @image_url, @stock, GETDATE(), GETDATE())`;
 
     const insertResult = await pool
       .request()
@@ -105,6 +107,7 @@ export const createProduct = async (req, res) => {
       .input("title", title)
       .input("price", price)
       .input("image_url", imageUrl)
+      .input("stock", stock)
       .query(insertQuery);
 
     const insertedId = insertResult.recordset[0].id;
@@ -141,12 +144,13 @@ export const updateProduct = async (req, res) => {
   }
 
   const { id } = req.params;
-  const { category_id, title, price } = req.body;
+  const { category_id, title, price, stock, status } = req.body;
 
   const missingFields = [];
   if (!category_id) missingFields.push("category_id");
   if (!title) missingFields.push("title");
   if (!price) missingFields.push("price");
+  if (!stock) missingFields.push("stock");
 
   if (missingFields.length > 0) {
     return res
@@ -209,6 +213,8 @@ export const updateProduct = async (req, res) => {
             title = @title, 
             price = @price,
             image_url = @image_url,
+            stock = @stock,
+            status = @status,
             updated_at = GETDATE() 
         WHERE id = @id
       `;
@@ -219,6 +225,8 @@ export const updateProduct = async (req, res) => {
       .input("title", title)
       .input("price", price)
       .input("image_url", imageUrl)
+      .input("stock", stock)
+      .input("status", status || existingProduct.status) // Eğer status verilmemişse eski değeri kullan
       .input("id", id)
       .query(updateQuery);
 
@@ -244,7 +252,7 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-// DELETE /products/:id -> Delete a product by ID
+// DELETE /products/:id -> Soft Delete a product by ID
 export const deleteProduct = async (req, res) => {
   if (req.user.role !== "admin") {
     return res.status(401).json({ message: "Bu işlemi yapma yetkiniz yok!" });
@@ -266,24 +274,12 @@ export const deleteProduct = async (req, res) => {
       return res.status(404).json({ message: "Ürün bulunamadı" });
     }
 
-    // 2. Ürünü sil
-    const deleteQuery = `DELETE FROM products WHERE id = @id`;
-    await pool.request().input("id", id).query(deleteQuery);
-
-    const deletedProduct = existingResult.recordset[0];
-
-    // 3. Sunucudan resmi sil
-    if (deletedProduct.image_url) {
-      const oldPath = path.join(process.cwd(), deletedProduct.image_url);
-      fs.unlink(oldPath, (err) => {
-        if (err) {
-          console.error("Eski resim silinirken hata oluştu: ", err);
-        }
-      });
-    }
+    // 2. Ürünü pasifleştir
+    const updateQuery = `UPDATE products SET status = 0 WHERE id = @id`;
+    await pool.request().input("id", id).query(updateQuery);
 
     // 4. Başarılı yanıt gönder
-    res.status(200).json({ message: "Ürün başarıyla silindi" });
+    res.status(200).json({ message: "Ürün başarıyla pasif hale getirildi" });
   } catch (error) {
     console.log("Error deleting product:", error);
     res.status(500).json({ error: "Internal server error" });

@@ -28,7 +28,9 @@ const ConfirmOrderModal = ({
   const { cartItems, totalPrice, clearCart } = useCartStore();
   const { fetchPaymentMethods, paymentMethods } = useSetsStore();
   const { fetchCustomers, customers } = useCustomersStore();
-  const { createBill } = useBillsStore();
+  const { createBill, error } = useBillsStore();
+
+  console.log("error -> ", error);
 
   const {
     handleSubmit,
@@ -69,10 +71,15 @@ const ConfirmOrderModal = ({
     };
 
     try {
-      await createBill(payload);
-      onClose();
-      clearCart();
-      navigate("/faturalar");
+      const result = await createBill(payload);
+
+      if (result === "success") {
+        onClose();
+        clearCart();
+        navigate("/faturalar");
+      } else {
+        console.error("Sipariş oluşturulamadı:", error);
+      }
     } catch (error) {
       console.error("Sipariş oluşturma hatası:", error);
     }

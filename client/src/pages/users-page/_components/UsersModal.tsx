@@ -16,6 +16,7 @@ const schema = yup.object({
   role: yup.string().required("Yetki zorunludur."),
   name: yup.string().required("Müşteri adı zorunludur."),
   surname: yup.string().required("Müşteri soyadı zorunludur."),
+  password: yup.string().min(6, "Şifre en az 6 karakter olmalıdır."),
   company_name: yup.string().required("Şirket adı zorunludur."),
   phone_number: yup.string().required("Telefon numarası zorunludur."),
 });
@@ -54,6 +55,7 @@ const UsersModal = ({
   const watchSurname = watch("surname");
   const watchCompanyName = watch("company_name");
   const watchPhoneNumber = watch("phone_number");
+  const watchPassword = watch("password");
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -65,6 +67,7 @@ const UsersModal = ({
         username: data.username,
         email: data.email,
         role: data.role,
+        password: data.password,
       };
 
       if (isAddOperation) {
@@ -148,18 +151,21 @@ const UsersModal = ({
             value={watchUsername}
             {...register("username")}
             errorMessage={errors.username?.message as string}
+            required
           />
           <Input
             label="Adı"
             value={watchName}
             {...register("name")}
             errorMessage={errors.name?.message as string}
+            required
           />
           <Input
             label="Soyadı"
             value={watchSurname}
             {...register("surname")}
             errorMessage={errors.surname?.message as string}
+            required
           />
         </div>
 
@@ -170,12 +176,14 @@ const UsersModal = ({
             value={watchCompanyName as string}
             {...register("company_name")}
             errorMessage={errors.company_name?.message as string}
+            required
           />
           <Input
             label="Yetki"
             value={watchRole}
             {...register("role")}
             errorMessage={errors.role?.message as string}
+            required
           />
         </div>
 
@@ -185,6 +193,7 @@ const UsersModal = ({
             value={watchEmail as string}
             {...register("email")}
             errorMessage={errors.email?.message as string}
+            required
           />
           <Input
             type="text"
@@ -193,8 +202,18 @@ const UsersModal = ({
             {...register("phone_number")}
             onChange={handlePhoneChange}
             errorMessage={errors.phone_number?.message as string}
+            required
           />
         </div>
+
+        <Input
+          type="password"
+          label="Şifre"
+          value={watchPassword as string}
+          {...register("password")}
+          errorMessage={errors.password?.message as string}
+          required
+        />
       </form>
     </Modal>
   );

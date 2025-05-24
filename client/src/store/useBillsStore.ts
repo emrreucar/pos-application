@@ -44,7 +44,7 @@ interface BillState {
   error: string | null;
 
   fetchBills: () => Promise<void>;
-  createBill: (bill: any) => Promise<void>;
+  createBill: (bill: any) => Promise<"success" | "error">;
   deleteBill: (billId: number) => Promise<void>;
   // updateBill: (bill: any, id: number) => Promise<void>;
 
@@ -74,7 +74,7 @@ export const useBillsStore = create<BillState>((set) => ({
     }
   },
 
-  createBill: async (bill: CreateBill) => {
+  createBill: async (bill: CreateBill): Promise<"success" | "error"> => {
     try {
       set({ loading: true, error: null });
       const response = await axiosInstance.post("/bills", bill);
@@ -90,9 +90,15 @@ export const useBillsStore = create<BillState>((set) => ({
       }));
 
       toast.success("Fatura başarıyla oluşturuldu.");
-    } catch (error) {
+      return "success";
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message ||
+          "Fatura oluşturulurken bir hata oluştu."
+      );
       console.log("Fatura oluşturulurken hata oluştu:", error);
       set({ loading: false, error: "Fatura oluşturulurken hata oluştu." });
+      return "error";
     }
   },
 

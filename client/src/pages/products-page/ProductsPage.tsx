@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import DataTable from "../../components/ui/Table";
 import { Product, useProductsStore } from "../../store/useProductsStore";
-import Actions from "../../components/ui/Actions";
 import { toast } from "react-toastify";
 import ProductsModal from "./_components/ProductsModal";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
+import Actions from "./_components/Actions";
+import Switch from "../../components/ui/Switch";
 
 const columns: {
   key:
@@ -13,6 +14,7 @@ const columns: {
     | "title"
     | "price"
     | "category_name"
+    | "stock"
     | "created_at"
     | "updated_at";
   label: string;
@@ -23,6 +25,7 @@ const columns: {
   { key: "title", label: "Ürün Adı" },
   { key: "price", label: "Fiyat" },
   { key: "category_name", label: "Kategori" },
+  { key: "stock", label: "Stok" },
   { key: "created_at", label: "Oluşturulma Tarihi" },
   { key: "updated_at", label: "Güncellenme Tarihi" },
 ];
@@ -32,6 +35,8 @@ const ProductsPage = () => {
   const [visibleProductsModal, setVisibleProductsModal] = useState(false);
   const [isAddOperation, setIsAddOperation] = useState(true);
   const [selectedRow, setSelectedRow] = useState<Product | null>(null);
+
+  const [checked, setChecked] = useState(true);
 
   const { products, deleteProduct, fetchProducts, loading } =
     useProductsStore();
@@ -70,19 +75,34 @@ const ProductsPage = () => {
     }
   };
 
+  const activeProducts = products.filter((product) => product.status);
+  const inactiveProducts = products.filter((product) => !product.status);
+
   if (loading) return <div>Yükleniyor...</div>;
 
   return (
     <>
       <h2 className="lg:hidden block mb-5 text-3xl font-bold">Ürünler</h2>
-      <Actions
-        onAdd={handleAddClick}
-        onEdit={handleEditClick}
-        onDelete={handleDeleteClick}
-      />
+      <div className="flex items-center justify-between mb-4 base__card__container">
+        <Actions
+          onAdd={handleAddClick}
+          addTitle="Ürün Ekle"
+          onEdit={handleEditClick}
+          editTitle="Ürün Düzenle"
+          onDelete={handleDeleteClick}
+          deleteTitle="Ürün Durumunu Pasifleştir"
+        />
+        <Switch
+          text={`${checked ? "Aktif" : "Pasif"}`}
+          isChecked={checked}
+          onChange={() => {
+            setChecked(!checked);
+          }}
+        />
+      </div>
       <DataTable
         columns={columns}
-        data={products}
+        data={checked ? activeProducts : inactiveProducts}
         selectedRow={selectedRow}
         onRowClick={handleRowClick}
       />
@@ -98,7 +118,8 @@ const ProductsPage = () => {
         open={visibleDeleteModal}
         onClose={() => setVisibleDeleteModal(false)}
         onConfirm={handleDeleteConfirm}
-        message="Bu ürünü silmek istediğinize emin misiniz?"
+        message="Ürün durumu pasife çekilecek. Devam etmek istiyor musunuz?"
+        buttonText="Pasife Çek"
       />
     </>
   );

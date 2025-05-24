@@ -27,6 +27,8 @@ const HomePage = () => {
   // sm -> 640 ve üstü
   // xs -> 480 ve üstü
 
+  const activeProducts = products.filter((product) => product.status);
+
   return (
     <>
       {loading && <p>Yükleniyor...</p>}
@@ -36,9 +38,9 @@ const HomePage = () => {
 
       {!loading && products.length > 0 && (
         <ul
-          className={`grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 ${productGridCols} gap-4`}
+          className={`grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 pb-20 xl:pb-0 ${productGridCols} gap-4`}
         >
-          {products.map((product) => (
+          {activeProducts.map((product) => (
             <ProductCardItem key={product.id} product={product} />
           ))}
         </ul>

@@ -3,7 +3,7 @@ import { formatCurrency } from "../../../lib/utils";
 import { FiPlus } from "react-icons/fi";
 import { useCartStore } from "../../../store/useCartStore";
 import { FaRegCheckCircle } from "react-icons/fa";
-import { FaMinus, FaPlus } from "react-icons/fa6";
+import { FaCircleExclamation, FaMinus, FaPlus } from "react-icons/fa6";
 
 const ProductCardItem = ({ product }: { product: Product }) => {
   const { addToCart, cartItems, changeQuantity, removeFromCart } =
@@ -40,25 +40,42 @@ const ProductCardItem = ({ product }: { product: Product }) => {
         >
           {formatCurrency(product.price)}
         </span>
-        <span className="flex items-center gap-1 font-semibold absolute right-2 top-2 shadow-md rounded-full px-2 py-1 bg-green-500 text-white">
-          <FaRegCheckCircle size={15} />
-          Stokta Var
-        </span>
-        {/* <span className="flex items-center gap-1 font-semibold absolute right-2 top-2 shadow-md rounded-full px-2 py-1 bg-red-500 text-white">
-          <FaCircleExclamation size={13} />
-          Son 5 Adet
-        </span> */}
+        {product.stock > 5 ? (
+          <span className="flex items-center gap-1 font-semibold absolute right-2 top-2 shadow-md rounded-full px-2 py-1 bg-green-500 text-white">
+            <FaRegCheckCircle size={15} />
+            Stokta Var
+          </span>
+        ) : (
+          <>
+            {product.stock === 0 ? (
+              <span className="flex items-center gap-1 font-semibold absolute right-2 top-2 shadow-md rounded-full px-2 py-1 bg-gray-500 text-white">
+                Stokta Yok
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 font-semibold absolute right-2 top-2 shadow-md rounded-full px-2 py-1 bg-red-500 text-white">
+                <FaCircleExclamation size={13} />
+                Son {product.stock} Adet
+              </span>
+            )}
+          </>
+        )}
+        {/*  */}
       </div>
 
       {/* + Butonu */}
       {!insertedProduct && (
         <div
-          className={`mt-auto flex justify-end pt-4 select-none ml-auto ${
-            insertedProduct === undefined ? "w-fit" : "w-full"
-          }`}
-          onClick={() => addToCart(product)}
+          className={`mt-auto flex items-center justify-between pt-4 select-none w-full`}
         >
-          <div className="w-9 h-9 flex items-center justify-center rounded-md bg-primary text-white cursor-pointer hover:bg-primary-dark transition-colors duration-300 ease-in-out">
+          {!insertedProduct && (
+            <span className="text-xs font-bold">
+              Stok Sayısı: {product.stock}
+            </span>
+          )}
+          <div
+            className="w-9 h-9 flex items-center justify-center rounded-md bg-primary text-white cursor-pointer hover:bg-primary-dark transition-colors duration-300 ease-in-out"
+            onClick={() => addToCart(product)}
+          >
             <FiPlus size={20} />
           </div>
         </div>

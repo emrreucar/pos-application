@@ -1,8 +1,18 @@
 import { ROUTES } from "./Sidebar";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AiOutlineLogout } from "react-icons/ai";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const Navigation = () => {
+  const { logout } = useAuthStore();
   const location = useLocation();
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/giris-yap");
+  };
 
   return (
     <div className="xl:hidden flex gap-5 fixed bottom-0 left-0 right-0 bg-white shadow-lg z-10 p-4">
@@ -22,6 +32,13 @@ const Navigation = () => {
           </span>
         </Link>
       ))}
+
+      <button
+        className="flex-1 flex items-center justify-center cursor-pointer hover:bg-danger/90 p-2 rounded-lg transition-all duration-300 text-white bg-danger font-semibold"
+        onClick={handleLogout}
+      >
+        <AiOutlineLogout size={15} />
+      </button>
     </div>
   );
 };

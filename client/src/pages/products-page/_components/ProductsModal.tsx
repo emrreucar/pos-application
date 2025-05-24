@@ -10,12 +10,15 @@ import Select from "../../../components/ui/Select";
 import { useCategoriesStore } from "../../../store/useCategoriesStore";
 import PreviewCard from "./PreviewCard";
 import ImageUpload from "../../../components/ui/ImageUpload";
+import Switch from "../../../components/ui/Switch";
 
 const schema = yup.object({
   title: yup.string().required("Ürün adı zorunludur"),
   price: yup.number().required("Fiyat zorunludur"),
   productImage: yup.string().optional().nullable(),
   category_id: yup.number().required("Kategori seçimi zorunludur"),
+  stock: yup.number().required("Stok zorunludur"),
+  status: yup.boolean().optional(),
 });
 
 type FormData = {
@@ -23,6 +26,8 @@ type FormData = {
   price: number | null;
   productImage?: string;
   category_id: number | null;
+  stock: number | null;
+  status?: boolean;
 };
 
 const ProductsModal = ({
@@ -57,6 +62,7 @@ const ProductsModal = ({
 
   const watchTitle = watch("title");
   const watchPrice = watch("price");
+  const watchStock = watch("stock");
 
   useEffect(() => {
     if (!isAddOperation && selectedRow) {
@@ -64,6 +70,8 @@ const ProductsModal = ({
       setValue("price", selectedRow.price);
       setValue("productImage", selectedRow.image_url);
       setValue("category_id", selectedRow.category_id);
+      setValue("stock", selectedRow.stock || 0);
+      setValue("status", selectedRow.status);
       setPreviewImage(
         selectedRow.image_url
           ? import.meta.env.VITE_BASE_IMAGE_URL + selectedRow.image_url
@@ -74,6 +82,7 @@ const ProductsModal = ({
       setValue("price", null);
       setValue("productImage", "");
       setValue("category_id", null);
+      setValue("stock", null);
     }
   }, [selectedRow, isAddOperation]);
 
@@ -92,6 +101,8 @@ const ProductsModal = ({
       price: data.price,
       category_id: data.category_id,
       productImage: selectedImage,
+      stock: data.stock,
+      status: data.status ?? true, // Default to true if not provided
     };
 
     if (!isAddOperation) {
@@ -128,6 +139,7 @@ const ProductsModal = ({
     setValue("price", null);
     setValue("productImage", "");
     setValue("category_id", null);
+    setValue("stock", null);
     errors.title = undefined;
     errors.price = undefined;
     errors.category_id = undefined;
@@ -151,7 +163,7 @@ const ProductsModal = ({
         handleSubmit(onSubmit)();
       }}
       loading={loading}
-      height="lg:h-[50vh] h-[80vh]"
+      height="lg:h-[60vh] h-[80vh]"
       width="xl:max-w-[50%] max-w-[90%]"
     >
       <section className="flex flex-col lg:flex-row justify-between gap-10">
@@ -162,20 +174,43 @@ const ProductsModal = ({
         />
 
         <form className="space-y-4 w-full" onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <div className="flex justify-end">
+                <Switch
+                  text={field.value ? "Aktif" : "Pasif"}
+                  isChecked={field.value}
+                  onChange={(checked) => field.onChange(checked)}
+                />
+              </div>
+            )}
+          />
+
+          <Input
+            label="Ürün Adı"
+            value={watchTitle}
+            {...register("title")}
+            errorMessage={errors.title?.message as string}
+            required
+          />
+
           <div className="flex flex-col md:flex-row gap-4">
-            <Input
-              label="Ürün Adı"
-              value={watchTitle}
-              {...register("title")}
-              errorMessage={errors.title?.message as string}
-              required
-            />
             <Input
               type="number"
               label="Ürün Fiyatı"
               value={watchPrice}
               {...register("price")}
               errorMessage={errors.price?.message as string}
+              required
+            />
+            <Input
+              type="number"
+              label="Stok"
+              value={watchStock}
+              {...register("stock")}
+              errorMessage={errors.stock?.message as string}
               required
             />
           </div>

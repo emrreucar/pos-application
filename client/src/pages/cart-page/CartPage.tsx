@@ -1,6 +1,6 @@
 import { useCartStore } from "../../store/useCartStore";
 import { formatCurrency } from "../../lib/utils";
-import { Minus, Plus, Trash } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import ConfirmOrderModal from "./_components/ConfirmOrderModal";
 import { CiTrash } from "react-icons/ci";
@@ -17,7 +17,7 @@ const CartPage = () => {
   } = useCartStore();
 
   return (
-    <div className="p-6 bg-gray-50">
+    <div className="p-6 bg-gray-50 pb-20 xl:pb-0">
       <h1 className="text-2xl font-bold mb-6">Sepetim</h1>
 
       {cartItems.length === 0 ? (
@@ -25,9 +25,9 @@ const CartPage = () => {
           Sepetinizde ürün bulunmamaktadır.
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Cart Items */}
-          <div className="lg:col-span-2 flex flex-col gap-4 p-4 bg-white shadow-md rounded-lg overflow-y-auto max-h-[70vh]">
+          <div className="col-span-2 flex flex-col gap-4 p-4 bg-white shadow-md rounded-lg overflow-y-auto max-h-[70vh]">
             {cartItems.map((item) => (
               <div
                 key={item.id}
