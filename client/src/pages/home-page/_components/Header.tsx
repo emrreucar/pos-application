@@ -8,6 +8,7 @@ import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import { useCartStore } from "../../../store/useCartStore";
 import { FaBasketShopping } from "react-icons/fa6";
 import SelectCategory from "./SelectCategory";
+import CartModal from "./CartModal";
 
 const Header = ({
   showSidebar,
@@ -28,6 +29,8 @@ const Header = ({
   const [selectedCategory, setSelectedCategory] = useState<string | null | any>(
     null
   );
+  const [visibleCartModal, setVisibleCartModal] = useState(false);
+
   const [lastPage, setLastPage] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -108,11 +111,11 @@ const Header = ({
         </div>
       )}
 
-      {/* menu icon */}
+      {/* cart icon */}
       {(isHomePage || isCartPage) && (
         <div
           onClick={handleCartClick}
-          className="bg-white rounded-xl w-12 h-12 flex items-center justify-center shadow-lg text-black cursor-pointer hover:bg-gray-100 transition-all duration-300 relative select-none"
+          className="bg-white rounded-xl w-12 h-12 xl:flex items-center justify-center shadow-lg text-black cursor-pointer hover:bg-gray-100 transition-all duration-300 relative select-none hidden"
         >
           <span>
             {cartItems.length > 0 && (
@@ -123,6 +126,28 @@ const Header = ({
           </span>
           <FaBasketShopping size={22} />
         </div>
+      )}
+
+      {/* cart icon for mobile */}
+      {(isHomePage || isCartPage) && (
+        <div
+          onClick={() => {
+            setVisibleCartModal((prev) => !prev);
+          }}
+          className="bg-white rounded-xl w-12 h-12 flex items-center justify-center shadow-lg text-black cursor-pointer hover:bg-gray-100 transition-all duration-300 relative select-none xl:hidden"
+        >
+          <span>
+            {cartItems.length > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold">
+                {cartItems.length}
+              </span>
+            )}
+          </span>
+          <FaBasketShopping size={22} />
+        </div>
+      )}
+      {visibleCartModal && (
+        <CartModal setVisibleCartModal={setVisibleCartModal} />
       )}
     </header>
   );

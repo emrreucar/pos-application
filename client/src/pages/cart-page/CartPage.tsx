@@ -1,9 +1,10 @@
 import { useCartStore } from "../../store/useCartStore";
 import { formatCurrency } from "../../lib/utils";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import ConfirmOrderModal from "./_components/ConfirmOrderModal";
 import { CiTrash } from "react-icons/ci";
+import Button from "../../components/ui/Button";
 
 const CartPage = () => {
   const [visibleModal, setVisibleModal] = useState(false);
@@ -25,116 +26,124 @@ const CartPage = () => {
           Sepetinizde ürün bulunmamaktadır.
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {/* Cart Items */}
-          <div className="col-span-2 flex flex-col gap-4 p-4 bg-white shadow-md rounded-lg overflow-y-auto max-h-[70vh]">
-            {cartItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center bg-white shadow-md rounded-lg p-4 gap-4"
-              >
-                <img
-                  src={
-                    item.product.image_url
-                      ? import.meta.env.VITE_BASE_IMAGE_URL +
-                        item.product.image_url
-                      : "/images/no-image.jpg"
-                  }
-                  alt={item.product.title}
-                  className="w-24 h-24 object-contain rounded-md border"
-                />
-                <div className="flex-1">
-                  <h2 className="font-semibold text-lg">
-                    {item.product.title}
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    Birim Fiyat: {formatCurrency(item.product.price)}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex items-center justify-between gap-5 mt-5 select-none">
-                      <span
-                        onClick={() => {
-                          if (item.quantity > 1) {
-                            changeQuantity(item.id, item.quantity - 1);
-                          } else {
-                            removeFromCart(item.id);
-                          }
-                        }}
-                        className="cursor-pointer border border-gray-300 rounded-md p-1 bg-white hover:bg-gray-100 transition-colors duration-200 ease-in-out w-8 h-8 flex items-center justify-center"
-                      >
-                        {item.quantity > 1 ? (
-                          <Minus size={15} />
-                        ) : (
-                          <CiTrash size={20} />
-                        )}
+        <div className="flex flex-col-reverse lg:flex-row gap-5 rounded-lg shadow-md overflow-hidden p-4">
+          {/* left side */}
+          <div className="flex-[2]">
+            <ul className="space-y-4 overflow-y-auto h-[calc(100vh_-_250px)]">
+              {cartItems.map((item, idx) => (
+                <li key={item.id} className="bg-white rounded-lg shadow p-4">
+                  {/* left side - image, title, unit price and quantities */}
+                  <div className="flex items-start gap-4">
+                    {/* image */}
+                    <div className="w-24 h-24 border border-gray-200 rounded-md overflow-hidden mb-4">
+                      <img
+                        src={
+                          item.product.image_url
+                            ? import.meta.env.VITE_BASE_IMAGE_URL +
+                              item.product.image_url
+                            : "/images/no-image.jpg"
+                        }
+                        className="w-full h-full object-contain rounded-md"
+                        alt={`${item.product.title}-${idx + 1}`}
+                      />
+                    </div>
+
+                    {/* content */}
+                    <div className="flex flex-col justify-between">
+                      <span className="text-lg font-bold">
+                        {" "}
+                        {item.product.title}{" "}
                       </span>
-                      <span> {item.quantity} </span>
-                      <span
-                        onClick={() => {
-                          changeQuantity(item.id, item.quantity + 1);
-                        }}
-                        className="cursor-pointer border border-[#0a0171] rounded-md p-1 bg-[#6460ce] hover:bg-[#0a0171] transition-colors duration-200 ease-in-out w-8 h-8 flex items-center justify-center text-white"
-                      >
-                        <Plus size={15} />
+                      <span className="text-gray-600">
+                        Birim Fiyat: {formatCurrency(item.product.price)}{" "}
                       </span>
+
+                      <div className="flex items-center justify-start gap-5 mt-5 select-none">
+                        <span
+                          onClick={() => {
+                            if (item.quantity > 1) {
+                              changeQuantity(item.id, item.quantity - 1);
+                            } else {
+                              removeFromCart(item.id);
+                            }
+                          }}
+                          className="cursor-pointer border border-gray-300 rounded-md p-1 bg-white hover:bg-gray-100 transition-colors duration-200 ease-in-out w-8 h-8 flex items-center justify-center"
+                        >
+                          {item.quantity > 1 ? (
+                            <Minus size={15} />
+                          ) : (
+                            <Trash size={15} />
+                          )}
+                        </span>
+                        <span> {item.quantity} </span>
+                        <span
+                          onClick={() => {
+                            changeQuantity(item.id, item.quantity + 1);
+                          }}
+                          className="cursor-pointer border border-[#0a0171] rounded-md p-1 bg-[#6460ce] hover:bg-[#0a0171] transition-colors duration-200 ease-in-out w-8 h-8 flex items-center justify-center text-white"
+                        >
+                          <Plus size={15} />
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-base">
-                    {formatCurrency(item.product.price * item.quantity)}
-                  </span>
-                  <span
-                    title="Ürünü Sepetten Çıkar"
-                    onClick={() => {
-                      removeFromCart(item.id);
-                    }}
-                  >
+
+                  {/* right side - price, delete icon */}
+                  <div className="flex items-center justify-between mt-4">
+                    <span className="text-xl font-bold">
+                      {formatCurrency(item.product.price * item.quantity)}
+                    </span>
                     <CiTrash
+                      size={24}
                       color="#ff0000"
-                      size={20}
+                      onClick={() => removeFromCart(item.id)}
                       className="cursor-pointer hover:text-red-600 transition-colors duration-200 ease-in-out"
+                      title="Ürünü Sepetten Çıkar"
                     />
-                  </span>
-                </div>
-              </div>
-            ))}
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Summary */}
-          <div className="bg-white shadow-md rounded-lg p-6 flex flex-col justify-between h-fit">
-            <h2 className="text-xl font-bold mb-4">Sipariş Özeti</h2>
-            <div className="flex justify-between mb-2">
-              <span>Toplam</span>
-              <span>{getTotalQuantity()} adet</span>
-            </div>
+          {/* right side */}
+          <div className="flex-1 bg-white rounded-lg shadow p-4 flex flex-col justify-between h-fit">
+            {/* top */}
+            <article className="space-y-4">
+              <span className="text-lg font-bold">Sipariş Özeti</span>
 
-            <div className="font-bold flex flex-col gap-2 mb-4 text-sm items-end text-gray-500 h-96 overflow-y-auto">
-              {cartItems.map((item) => (
-                <div key={item.id}>
-                  <span> {item.quantity} </span>
-                  <span>x</span>
-                  <span>
-                    {" "}
-                    {item.product.title.length > 35
-                      ? item.product.title.slice(0, 35) + "..."
-                      : item.product.title}{" "}
-                  </span>
+              <div className="flex items-start justify-between font-semibold">
+                <span>Toplam</span>
+
+                <div className="flex flex-col justify-end items-end">
+                  <span> {getTotalQuantity()} adet</span>
+
+                  <div className="text-gray-500 flex flex-col items-end gap-1 font-bold text-sm mt-2 overflow-y-auto max-h-64">
+                    {cartItems.map((item) => (
+                      <div key={item.id}>
+                        <span>{item.quantity}</span> x{" "}
+                        <span className="">
+                          {item.product.title.length > 30
+                            ? item.product.title.slice(0, 30) + "..."
+                            : item.product.title}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            </article>
 
-            <div className="flex justify-between font-semibold text-lg">
-              <span>Toplam Tutar:</span>
-              <span>{formatCurrency(totalPrice())}</span>
-            </div>
-
-            <button
-              className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
-              onClick={() => setVisibleModal(true)}
-            >
-              Siparişi Tamamla
-            </button>
+            {/* bottom */}
+            <article className="border-t border-gray-200 pt-4 mt-4 space-y-4">
+              <div className="flex items-center justify-between font-semibold text-lg">
+                <span>Toplam Tutar: </span>
+                <span>{formatCurrency(totalPrice())}</span>
+              </div>
+              <Button fullWidth onClick={() => setVisibleModal(true)}>
+                Siparişi Tamamla
+              </Button>
+            </article>
           </div>
         </div>
       )}

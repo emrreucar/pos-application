@@ -14,10 +14,18 @@ import Switch from "../../../components/ui/Switch";
 
 const schema = yup.object({
   title: yup.string().required("Ürün adı zorunludur"),
-  price: yup.number().required("Fiyat zorunludur"),
+  price: yup
+    .number()
+    .typeError("Fiyat sayısal bir değer olmalıdır")
+    .min(0, "Fiyat 0'dan küçük olamaz")
+    .required("Fiyat zorunludur"),
   productImage: yup.string().optional().nullable(),
   category_id: yup.number().required("Kategori seçimi zorunludur"),
-  stock: yup.number().required("Stok zorunludur"),
+  stock: yup
+    .number()
+    .typeError("Stok sayısal bir değer olmalıdır")
+    .min(0, "Stok 0'dan küçük olamaz")
+    .required("Stok zorunludur"),
   status: yup.boolean().optional(),
 });
 
@@ -144,6 +152,7 @@ const ProductsModal = ({
     errors.price = undefined;
     errors.category_id = undefined;
     errors.productImage = undefined;
+    errors.stock = undefined;
 
     setSelectedImage(null);
     setPreviewImage(null);
@@ -204,6 +213,7 @@ const ProductsModal = ({
               {...register("price")}
               errorMessage={errors.price?.message as string}
               required
+              min={0}
             />
             <Input
               type="number"
@@ -212,6 +222,7 @@ const ProductsModal = ({
               {...register("stock")}
               errorMessage={errors.stock?.message as string}
               required
+              min={0}
             />
           </div>
 

@@ -163,6 +163,16 @@ const RegisterPage = () => {
             </Link>
           </span>
         </div>
+        <span className="absolute bottom-0 left-1/5">
+          &copy; Made with by{" "}
+          <Link
+            to="https://www.linkedin.com/in/emreucar13/"
+            target="_blank"
+            className="font-semibold text-blue-500 hover:underline"
+          >
+            Emre Uçar
+          </Link>
+        </span>
       </article>
     </section>
   );

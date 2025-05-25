@@ -1,38 +1,42 @@
-import { useCartStore } from "../../store/useCartStore";
-import { formatCurrency } from "../../lib/utils";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { formatCurrency } from "../../../lib/utils";
+import { useCartStore } from "../../../store/useCartStore";
+import { FaRegCircleXmark } from "react-icons/fa6";
 import { CheckCheckIcon, Minus, Plus, Trash } from "lucide-react";
-import { useState } from "react";
-import ConfirmDeleteModal from "../ui/ConfirmDeleteModal";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import ConfirmDeleteModal from "../../../components/ui/ConfirmDeleteModal";
 import { toast } from "react-toastify";
 
-const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
+interface CartModalProps {
+  setVisibleCartModal: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const CartModal: React.FC<CartModalProps> = ({ setVisibleCartModal }) => {
   const [visibleDeleteModal, setVisibleDeleteModal] = useState(false);
-  const { cartItems, totalPrice, removeFromCart, changeQuantity, clearCart } =
+  const { cartItems, removeFromCart, changeQuantity, totalPrice, clearCart } =
     useCartStore();
 
   return (
-    <>
-      <div
-        className={`overflow-hidden bg-white shadow-lg rounded-xl h-full transition-all duration-300 ease-in-out ${
-          showCart
-            ? "2xl:w-[25rem] w-[23rem] hidden xl:block px-4 py-6 opacity-100 scale-100"
-            : "w-0 p-0 opacity-0 scale-50"
-        } `}
-      >
-        <span className="text-xl font-semibold block bg-secondary text-center text-white rounded-md py-2 mb-4">
+    <div
+      className="fixed top-0 left-0 w-full h-full bg-white/50 backdrop-blur-sm flex items-center justify-center z-50 shadow-lg"
+      style={{ backdropFilter: "blur(5px)" }}
+    >
+      <FaRegCircleXmark
+        className="absolute top-5 right-5 text-red-500 cursor-pointer hover:text-red-800 transition-colors duration-200 ease-in-out"
+        size={30}
+        onClick={() => setVisibleCartModal(false)}
+      />
+
+      {/* orders summary  */}
+      <article className="sm:w-2/3 w-full px-10 sm:px-0">
+        {/* <span className="text-xl font-semibold block bg-secondary text-center text-white rounded-md py-2 mb-4">
           Mevcut Sipariş
-        </span>
+        </span> */}
 
         {cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-[calc(100vh-150px)] text-center p-4">
-            <img
-              src="/images/empty-cart.gif"
-              alt="Boş sepet"
-              className="w-full h-96 mb-4 object-contain"
-            />
-            <p className="text-gray-500 text-lg font-semibold">
+            <p className="text-gray-800 text-lg font-semibold">
               Sepetinde hâlâ bir şey yok 🤔 <br />
               Hadi birkaç ürün eklemeye ne dersin?
             </p>
@@ -43,7 +47,7 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
               {cartItems.map((item, idx) => (
                 <li
                   key={item.id}
-                  className="flex justify-between items-start mb-2 border border-gray-200 p-2 rounded-md"
+                  className="flex justify-between items-start mb-2 border border-secondary-light p-4 rounded-md bg-secondary-dark text-white"
                 >
                   <div className="flex items-start gap-2 h-full">
                     <img
@@ -87,7 +91,7 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
                             removeFromCart(item.id);
                           }
                         }}
-                        className="cursor-pointer border border-gray-300 rounded-md p-1 bg-white hover:bg-gray-100 transition-colors duration-200 ease-in-out w-8 h-8 flex items-center justify-center"
+                        className="cursor-pointer p-1 bg-secondary-light rounded transition-colors duration-200 ease-in-out w-8 h-8 flex items-center justify-center"
                       >
                         {item.quantity > 1 ? (
                           <Minus size={15} />
@@ -100,7 +104,7 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
                         onClick={() => {
                           changeQuantity(item.id, item.quantity + 1);
                         }}
-                        className="cursor-pointer border border-[#0a0171] rounded-md p-1 bg-[#6460ce] hover:bg-[#0a0171] transition-colors duration-200 ease-in-out w-8 h-8 flex items-center justify-center text-white"
+                        className="cursor-pointer rounded bg-secondary-light transition-colors duration-200 ease-in-out w-8 h-8 flex items-center justify-center text-white"
                       >
                         <Plus size={15} />
                       </span>
@@ -110,10 +114,10 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
               ))}
             </ul>
 
-            <div className="flex flex-col gap-2 mt-auto border border-gray-200 p-2 rounded-md">
+            <div className="flex flex-col gap-2 mt-auto border bg-secondary-dark p-4 !text-white rounded-md">
               <div className="text-lg flex items-center justify-between">
-                <span className="text-gray-600 font-medium">Toplam Tutar:</span>
-                <span className="font-extrabold text-gray-800">
+                <span className="font-medium">Toplam Tutar:</span>
+                <span className="font-extrabold">
                   {formatCurrency(totalPrice())}
                 </span>
               </div>
@@ -122,23 +126,25 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
               <div className="flex items-center justify-between mt-4 text-sm">
                 <Link
                   to={"/sepetim"}
-                  className="flex items-center gap-2 cursor-pointer bg-[#6460ce] text-white rounded-md py-2 px-3 hover:bg-[#0a0171] transition-colors duration-200 ease-in-out"
+                  onClick={() => setVisibleCartModal(false)}
+                  className="flex items-center gap-2 cursor-pointer bg-secondary-light text-white rounded-md py-2 px-3 hover:bg-secondary transition-colors duration-200 ease-in-out"
                 >
                   <CheckCheckIcon size={18} />
                   <span>Siparişi Onayla</span>
                 </Link>
                 <div
-                  className="flex items-center gap-2 cursor-pointer bg-red-500 text-white rounded-md py-2 px-3 hover:bg-red-600 transition-colors duration-200 ease-in-out"
+                  className="flex items-center gap-2 cursor-pointer bg-danger-dark text-white rounded-md py-2 px-3 hover:bg-danger transition-colors duration-200 ease-in-out"
                   onClick={() => setVisibleDeleteModal(true)}
                 >
-                  <FaRegTrashAlt color="#fff" size={18} />
+                  <FaRegTrashAlt color="#fff" size={15} />
                   <span>Sepeti Temizle</span>
                 </div>
               </div>
             </div>
           </div>
         )}
-      </div>
+      </article>
+
       <ConfirmDeleteModal
         open={visibleDeleteModal}
         onClose={() => setVisibleDeleteModal(false)}
@@ -146,12 +152,13 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
           clearCart();
           toast.success("Sepetiniz temizlendi!");
           setVisibleDeleteModal(false);
+          setVisibleCartModal(false);
         }}
         message="Sepeti temizlemek istediğinize emin misiniz?"
         buttonText="Evet, Temizle"
       />
-    </>
+    </div>
   );
 };
 
-export default OrdersSummary;
+export default CartModal;

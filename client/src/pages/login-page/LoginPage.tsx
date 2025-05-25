@@ -8,6 +8,33 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 
+// const TEXTS = [
+//   {
+//     id: 1,
+//     title: "POS ÇÖZÜMLERİ",
+//     description:
+//       "İhtiyaçlarınıza özel geliştirilmiş, hızlı ve güvenilir POS yazılımları. Müşteri deneyimini iyileştiren ve iş süreçlerinizi kolaylaştıran yenilikçi çözümlerle sektörde fark yaratın.",
+//   },
+//   {
+//     id: 2,
+//     title: "RESPONSİVE TASARIM & KURUMSAL ÇÖZÜMLER",
+//     description:
+//       "Mobil uyumlu tasarım ve kurumsal çözümlerle, her cihazda mükemmel performans. İşletmenizin ihtiyaçlarına özel, esnek ve ölçeklenebilir POS sistemleri ile rekabette öne çıkın.",
+//   },
+//   {
+//     id: 3,
+//     title: "FATURALANDIRMA, STOK TAKİBİ VE RAPORLAMA",
+//     description:
+//       "Tüm süreçlerinizi tek panelden kolayca yönetin. Güncel stok yönetimi, detaylı raporlar ve özelleştirilebilir faturalar parmaklarınızın ucunda.",
+//   },
+//   {
+//     id: 4,
+//     title: "YENİLİKÇİ, ESNEK VE GÜVENİLİR POS YAZILIMLARI",
+//     description:
+//       "Sektörel ihtiyaçlarınıza uygun geliştirilmiş POS yazılımlarıyla işinizi bir adım öteye taşıyın.",
+//   },
+// ];
+
 const schema = yup.object({
   username: yup.string().required("Kullanıcı adı zorunludur"),
   password: yup
@@ -90,15 +117,38 @@ const LoginPage = () => {
             </Link>
           </span>
         </div>
+
+        <span className="absolute bottom-0 left-1/5">
+          &copy; Made with by{" "}
+          <Link
+            to="https://www.linkedin.com/in/emreucar13/"
+            target="_blank"
+            className="font-semibold text-blue-500 hover:underline"
+          >
+            Emre Uçar
+          </Link>
+        </span>
       </article>
 
       {/* right side - image */}
-      <div className="flex-1 hidden lg:block w-full h-full">
+      <div className="flex-1 hidden lg:block w-full h-full relative">
         <img
           src="/images/login-bg2.jpg"
           alt="Background"
           className="w-full h-full object-cover rounded-l-3xl brightness-95"
         />
+
+        {/* <div className="absolute top-0 left-0 w-full h-full rounded-l-3xl text-white flex flex-col gap-10 items-start justify-center">
+          {TEXTS.map((text) => (
+            <div
+              key={text.id}
+              className="flex flex-col items-start gap-2 px-10"
+            >
+              <span className="text-2xl font-bold">{text.title}</span>
+              <span>{text.description}</span>
+            </div>
+          ))}
+        </div> */}
       </div>
     </section>
   );

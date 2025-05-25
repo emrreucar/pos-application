@@ -98,7 +98,9 @@ const ProductCardItem = ({ product }: { product: Product }) => {
           >
             <FaMinus size={15} color="white" />
           </div>
-          <span className="font-semibold">{insertedProduct.quantity} Adet</span>
+          <span className="font-semibold text-[15px]">
+            {insertedProduct.quantity} Adet
+          </span>
           <div
             className="bg-primary-light hover:bg-primary transition-all duration-200 h-9 w-9 rounded-r-lg flex items-center justify-center"
             onClick={() => {

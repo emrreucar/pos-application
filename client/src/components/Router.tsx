@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import HomePage from "../pages/home-page/HomePage";
 import GuestRoute from "./GuestRoute";
@@ -35,7 +35,20 @@ const Router = () => {
       </Route>
 
       {/* Fallback Routes */}
-      <Route path="*" element={<div>404 Sayfa Bulunamadı</div>} />
+      <Route
+        path="*"
+        element={
+          <div className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 text-2xl font-bold w-full h-full flex flex-col items-center justify-center text-gray-800">
+            <p>404 - Sayfa Bulunamadı</p>
+            <Link
+              to={"/"}
+              className="text-blue-500 font-semibold underline my-5 text-base"
+            >
+              Anasayfaya dön
+            </Link>
+          </div>
+        }
+      />
     </Routes>
   );
 };
