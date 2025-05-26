@@ -30,8 +30,6 @@ const ConfirmOrderModal = ({
   const { fetchCustomers, customers } = useCustomersStore();
   const { createBill, error } = useBillsStore();
 
-  console.log("error -> ", error);
-
   const {
     handleSubmit,
     control,

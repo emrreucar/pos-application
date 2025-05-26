@@ -20,6 +20,7 @@ const Layout = ({
 }) => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const isSelectedCategoryPage = location.pathname.includes("/kategori/");
 
   return (
     <section className="flex h-screen w-full overflow-hidden bg-[#f6f6f6]">
@@ -44,7 +45,9 @@ const Layout = ({
         </div>
 
         {/* cart section only show home page */}
-        {isHomePage && <OrdersSummary showCart={showCart} />}
+        {(isHomePage || isSelectedCategoryPage) && (
+          <OrdersSummary showCart={showCart} />
+        )}
       </div>
     </section>
   );

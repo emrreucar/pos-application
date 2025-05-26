@@ -6,6 +6,7 @@ import ProductsModal from "./_components/ProductsModal";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 import Actions from "./_components/Actions";
 import Switch from "../../components/ui/Switch";
+import PageLoader from "../../components/ui/PageLoader";
 
 const columns: {
   key:
@@ -78,7 +79,7 @@ const ProductsPage = () => {
   const activeProducts = products.filter((product) => product.status);
   const inactiveProducts = products.filter((product) => !product.status);
 
-  if (loading) return <div>Yükleniyor...</div>;
+  if (loading) return <PageLoader />;
 
   return (
     <>

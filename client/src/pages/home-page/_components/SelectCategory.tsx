@@ -10,7 +10,6 @@ interface SelectCategoryProps {
   setSelectedCategory: React.Dispatch<
     React.SetStateAction<{ id: number; name: string } | null>
   >;
-  setLastPage?: React.Dispatch<React.SetStateAction<string | null>>;
   openDropdown?: boolean;
   setOpenDropdown?: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -18,7 +17,6 @@ interface SelectCategoryProps {
 const SelectCategory = ({
   selectedCategory,
   setSelectedCategory,
-  setLastPage,
   openDropdown = false,
   setOpenDropdown = () => {},
 }: SelectCategoryProps) => {
@@ -32,8 +30,7 @@ const SelectCategory = ({
 
   const handleCategoryClick = (categoryId: number) => {
     if (location.pathname !== "/") {
-      setLastPage && setLastPage(location.pathname);
-      navigate("/");
+      navigate(`/kategori/${categoryId}`);
     }
     getProductsByCategoryId(categoryId);
   };

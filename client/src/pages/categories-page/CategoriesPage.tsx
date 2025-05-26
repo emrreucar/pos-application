@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import CategoriesModal from "./_components/CategoriesModal";
 import { Category, useCategoriesStore } from "../../store/useCategoriesStore";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
+import PageLoader from "../../components/ui/PageLoader";
 
 const columns: {
   key: "id" | "name" | "created_at" | "updated_at";
@@ -60,7 +61,7 @@ const CategoriesPage = () => {
     }
   };
 
-  if (loading) return <div>Yükleniyor...</div>;
+  if (loading) return <PageLoader />;
 
   return (
     <>

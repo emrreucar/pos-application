@@ -180,6 +180,7 @@ const ProductsModal = ({
           image={previewImage}
           title={watchTitle}
           price={watchPrice}
+          stock={watchStock}
         />
 
         <form className="space-y-4 w-full" onSubmit={handleSubmit(onSubmit)}>

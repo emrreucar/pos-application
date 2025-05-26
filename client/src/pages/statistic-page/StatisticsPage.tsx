@@ -51,11 +51,11 @@ const StatisticsPage = () => {
   const greeting = () => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
-      return "Günaydın";
+      return "Günaydın.";
     } else if (currentHour < 18) {
-      return "İyi Günler";
+      return "İyi Günler.";
     } else {
-      return "İyi Akşamlar";
+      return "İyi Akşamlar.";
     }
   };
 

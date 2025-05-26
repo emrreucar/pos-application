@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 import { useBillsStore } from "../../store/useBillsStore";
 import PrintModal from "./_components/PrintModal";
+import PageLoader from "../../components/ui/PageLoader";
 
 const columns: {
   key:
@@ -58,7 +59,7 @@ const BillsPage = () => {
     setVisibleModal(true);
   };
 
-  if (loading) return <div>Yükleniyor...</div>;
+  if (loading) return <PageLoader />;
 
   return (
     <>

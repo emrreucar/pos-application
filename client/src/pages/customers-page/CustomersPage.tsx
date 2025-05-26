@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import CustomersModal from "./_components/CustomersModal";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 import { Customer, useCustomersStore } from "../../store/useCustomersStore";
+import PageLoader from "../../components/ui/PageLoader";
 
 const columns: {
   key:
@@ -74,7 +75,7 @@ const CustomersPage = () => {
     }
   };
 
-  if (loading) return <div>Yükleniyor...</div>;
+  if (loading) return <PageLoader />;
 
   return (
     <>

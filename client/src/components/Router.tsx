@@ -20,6 +20,7 @@ const Router = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/urunler" element={<ProductsPage />} />
         <Route path="/kategoriler" element={<CategoriesPage />} />
+        <Route path="/kategori/:categoryId" element={<HomePage />} />
         <Route path="/musteriler" element={<CustomersPage />} />
         <Route path="/kullanicilar" element={<UsersPage />} />
         <Route path="/sepetim" element={<CartPage />} />

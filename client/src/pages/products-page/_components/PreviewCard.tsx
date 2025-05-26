@@ -6,6 +6,7 @@ const PreviewCard = ({
   image: string | null;
   title: string;
   price: string;
+  stock: number | null;
 }) => {
   return (
     <div className="flex flex-col w-full lg:w-1/3 h-full">
@@ -19,6 +20,17 @@ const PreviewCard = ({
         <h2 className="text-lg font-semibold text-center line-clamp-2">
           {title}
         </h2>
+        {/* <span className="absolute right-3 top-2 text-sm">
+          {stock && stock > 5 ? (
+            <span className="text-green-500">Stokta var</span>
+          ) : stock && stock <= 5 ? (
+            <span className="text-red-500">
+              Son {Math.abs(stock)} adet kaldı
+            </span>
+          ) : (
+            <span className="text-yellow-500">Stok bilgisi yok</span>
+          )}
+        </span> */}
         <p className="text-gray-500 text-center">
           {price ? (
             <>

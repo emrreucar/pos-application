@@ -21,6 +21,7 @@ interface ProductsState {
   products: Product[];
   loading: boolean;
   error: string | null;
+  isSearchMode?: boolean;
   fetchProducts: () => Promise<void>;
   createProduct: (product: Product) => Promise<void>;
   updateProduct: (product: Product, id: number) => Promise<void>;
@@ -44,14 +45,14 @@ const debouncedFetch = debounce(async (search: string, set: any) => {
       updated_at: dayjs(product.updated_at).format("DD.MM.YYYY"),
     }));
 
-    set({ products: formattedProducts });
-    set({ loading: false });
+    set({ products: formattedProducts, loading: false, isSearchMode: true });
   } catch (error) {
     console.log("Ürünleri ararken hata oluştu:", error);
     set({
       loading: false,
       error: "Ürünleri ararken hata oluştu.",
       products: [],
+      isSearchMode: true,
     });
   }
 }, 500);
@@ -74,8 +75,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
         updated_at: dayjs(product.updated_at).format("DD.MM.YYYY"),
       }));
 
-      set({ products: formattedProducts });
-      set({ loading: false });
+      set({ products: formattedProducts, loading: false, isSearchMode: false });
     } catch (error) {
       console.log("Ürünleri getirirken hata oluştu:", error);
       set({ loading: false, error: "Ürünleri getirirken hata oluştu." });
@@ -117,6 +117,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
       set((state) => ({
         products: [formattedData, ...state.products],
         loading: false,
+        isSearchMode: false,
       }));
 
       toast.success("Ürün başarıyla eklendi.");
@@ -167,6 +168,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
           item.id === id ? formattedData : item
         ),
         loading: false,
+        isSearchMode: false,
       }));
 
       toast.success("Ürün başarıyla güncellendi.");
@@ -191,6 +193,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
           item.id === id ? { ...item, status: false } : item
         ),
         loading: false,
+        isSearchMode: false,
       }));
 
       toast.success("Ürün durumu pasife çekildi.");
@@ -219,8 +222,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
         updated_at: dayjs(product.updated_at).format("DD.MM.YYYY"),
       }));
 
-      set({ products: formattedProducts });
-      set({ loading: false });
+      set({ products: formattedProducts, loading: false, isSearchMode: true });
 
       return formattedProducts;
     } catch (error) {
@@ -229,6 +231,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
         products: [],
         loading: false,
         error: "Ürünleri kategoriye göre getirirken hata oluştu.",
+        isSearchMode: true,
       });
     }
   },

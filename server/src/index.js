@@ -17,11 +17,10 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:7000",
-  "https://www.pos.enderticaret.com",
+  "https://www.pos.mereminsoft.com",
 ];
 
 //! middleware
-
 // application/json için gerekli.
 app.use(
   express.json({

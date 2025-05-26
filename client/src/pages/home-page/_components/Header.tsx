@@ -39,6 +39,7 @@ const Header = ({
 
   const isHomePage = location.pathname === "/";
   const isCartPage = location.pathname === "/sepetim";
+  const isSelectedCategoryPage = location.pathname.includes("/kategori/");
 
   const dropdownRef = useRef<HTMLDivElement | any | null>(null);
   useOutsideClick(dropdownRef, () => setOpenDropdown(false));
@@ -85,7 +86,7 @@ const Header = ({
       </div>
 
       {/* search input */}
-      {(isHomePage || isCartPage) && (
+      {(isHomePage || isCartPage || isSelectedCategoryPage) && (
         <div className="relative flex items-center justify-center w-full shadow-md rounded-xl">
           <input
             type="text"
@@ -101,18 +102,19 @@ const Header = ({
           />
 
           {/* categories */}
-          <SelectCategory
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            setLastPage={setLastPage}
-            openDropdown={openDropdown}
-            setOpenDropdown={setOpenDropdown}
-          />
+          {!isCartPage && (
+            <SelectCategory
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              openDropdown={openDropdown}
+              setOpenDropdown={setOpenDropdown}
+            />
+          )}
         </div>
       )}
 
       {/* cart icon */}
-      {(isHomePage || isCartPage) && (
+      {(isHomePage || isCartPage || isSelectedCategoryPage) && (
         <div
           onClick={handleCartClick}
           className="bg-white rounded-xl w-12 h-12 xl:flex items-center justify-center shadow-lg text-black cursor-pointer hover:bg-gray-100 transition-all duration-300 relative select-none hidden"
