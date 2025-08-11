@@ -2,12 +2,10 @@ import { FiMenu } from "react-icons/fi";
 import { IoIosSearch } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProductsStore } from "../../../store/useProductsStore";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCategoriesStore } from "../../../store/useCategoriesStore";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import { useCartStore } from "../../../store/useCartStore";
 import { FaBasketShopping } from "react-icons/fa6";
-import SelectCategory from "./SelectCategory";
 import CartModal from "./CartModal";
 
 const Header = ({
@@ -25,10 +23,6 @@ const Header = ({
   const { fetchCategories } = useCategoriesStore();
   const { getProductsBySearch } = useProductsStore();
 
-  const [openDropdown, setOpenDropdown] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null | any>(
-    null
-  );
   const [visibleCartModal, setVisibleCartModal] = useState(false);
 
   const [lastPage, setLastPage] = useState<string | null>(null);
@@ -41,8 +35,8 @@ const Header = ({
   const isCartPage = location.pathname === "/sepetim";
   const isSelectedCategoryPage = location.pathname.includes("/kategori/");
 
-  const dropdownRef = useRef<HTMLDivElement | any | null>(null);
-  useOutsideClick(dropdownRef, () => setOpenDropdown(false));
+  // const dropdownRef = useRef<HTMLDivElement | any | null>(null);
+  // useOutsideClick(dropdownRef, () => setOpenDropdown(false));
 
   const handleMenuClick = () => {
     setShowSidebar && setShowSidebar(!showSidebar);
@@ -102,14 +96,14 @@ const Header = ({
           />
 
           {/* categories */}
-          {!isCartPage && (
+          {/* {!isCartPage && (
             <SelectCategory
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
               openDropdown={openDropdown}
               setOpenDropdown={setOpenDropdown}
             />
-          )}
+          )} */}
         </div>
       )}
 

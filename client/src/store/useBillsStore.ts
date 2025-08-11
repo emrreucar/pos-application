@@ -41,6 +41,7 @@ interface BillState {
   bills: Bill[];
   reportProducts: ReportProduct[];
   loading: boolean;
+  fetchLoading: boolean;
   error: string | null;
 
   fetchBills: () => Promise<void>;
@@ -55,11 +56,12 @@ export const useBillsStore = create<BillState>((set) => ({
   bills: [],
   reportProducts: [],
   loading: false,
+  fetchLoading: false,
   error: null,
 
   fetchBills: async () => {
     try {
-      set({ loading: true, error: null });
+      set({ fetchLoading: true, error: null });
       const response = await axiosInstance.get("/bills");
       const formattedBills = response.data.map((bill: Bill) => ({
         ...bill,
@@ -67,10 +69,10 @@ export const useBillsStore = create<BillState>((set) => ({
       }));
 
       set({ bills: formattedBills });
-      set({ loading: false });
+      set({ fetchLoading: false });
     } catch (error) {
       console.log("Faturaları getirirken hata oluştu:", error);
-      set({ loading: false, error: "Faturaları getirirken hata oluştu." });
+      set({ fetchLoading: false, error: "Faturaları getirirken hata oluştu." });
     }
   },
 

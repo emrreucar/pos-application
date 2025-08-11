@@ -1,16 +1,16 @@
 import { Link, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-import HomePage from "../pages/home-page/HomePage";
+import HomePage from "../pages/home/HomePage";
 import GuestRoute from "./GuestRoute";
-import LoginPage from "../pages/login-page/LoginPage";
-import RegisterPage from "../pages/register-page/RegisterPage";
-import ProductsPage from "../pages/products-page/ProductsPage";
-import CategoriesPage from "../pages/categories-page/CategoriesPage";
-import CustomersPage from "../pages/customers-page/CustomersPage";
-import UsersPage from "../pages/users-page/UsersPage";
-import CartPage from "../pages/cart-page/CartPage";
-import BillsPage from "../pages/bills-page/BillsPage";
-import StatisticsPage from "../pages/statistic-page/StatisticsPage";
+import LoginPage from "../pages/login/LoginPage";
+import RegisterPage from "../pages/register/RegisterPage";
+import ProductsPage from "../pages/products/ProductsPage";
+import CategoriesPage from "../pages/categories/CategoriesPage";
+import CustomersPage from "../pages/customers/CustomersPage";
+import UsersPage from "../pages/users/UsersPage";
+import CartPage from "../pages/cart/CartPage";
+import BillsPage from "../pages/bills/BillsPage";
+import StatisticsPage from "../pages/statistic/StatisticsPage";
 
 const Router = () => {
   return (

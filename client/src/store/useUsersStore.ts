@@ -20,6 +20,7 @@ export interface User {
 interface UsersState {
   users: User[];
   loading: boolean;
+  fetchLoading: boolean;
   error: string | null;
   fetchUsers: () => Promise<void>;
   updateUser: (user: User, id: number) => Promise<void>;
@@ -29,11 +30,12 @@ interface UsersState {
 export const useUsersStore = create<UsersState>((set) => ({
   users: [],
   loading: false,
+  fetchLoading: false,
   error: null,
 
   fetchUsers: async () => {
     try {
-      set({ loading: true, error: null });
+      set({ fetchLoading: true, error: null });
       const response = await axiosInstance.get("/users");
 
       const formattedUsers = response.data.map((user: User) => ({
@@ -43,10 +45,13 @@ export const useUsersStore = create<UsersState>((set) => ({
       }));
 
       set({ users: formattedUsers });
-      set({ loading: false });
+      set({ fetchLoading: false });
     } catch (error) {
       console.log("Kullanıcıları getirirken hata oluştu:", error);
-      set({ loading: false, error: "Kullanıcıları getirirken hata oluştu." });
+      set({
+        fetchLoading: false,
+        error: "Kullanıcıları getirirken hata oluştu.",
+      });
     }
   },
 

@@ -18,6 +18,7 @@ export interface Customer {
 interface CustomersState {
   customers: Customer[];
   loading: boolean;
+  fetchLoading: boolean;
   error: string | null;
   fetchCustomers: () => Promise<void>;
   createCustomer: (customer: Customer) => Promise<void>;
@@ -28,11 +29,12 @@ interface CustomersState {
 export const useCustomersStore = create<CustomersState>((set) => ({
   customers: [],
   loading: false,
+  fetchLoading: false,
   error: null,
 
   fetchCustomers: async () => {
     try {
-      set({ loading: true, error: null });
+      set({ fetchLoading: true, error: null });
       const response = await axiosInstance.get("/customers");
 
       const formattedCustomers = response.data.map((customer: Customer) => ({
@@ -42,10 +44,13 @@ export const useCustomersStore = create<CustomersState>((set) => ({
       }));
 
       set({ customers: formattedCustomers });
-      set({ loading: false });
+      set({ fetchLoading: false });
     } catch (error) {
       console.log("Müşterileri getirirken hata oluştu:", error);
-      set({ loading: false, error: "Müşterileri getirirken hata oluştu." });
+      set({
+        fetchLoading: false,
+        error: "Müşterileri getirirken hata oluştu.",
+      });
     }
   },
 

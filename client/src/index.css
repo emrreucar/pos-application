@@ -1,10 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"); */
+/* @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"); */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 * {
-  font-family: "Mulish", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .custom__container {
@@ -17,8 +20,8 @@
 
 /* custom scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 7px;
+  width: 5px;
+  height: 3.5px;
 }
 ::-webkit-scrollbar-thumb {
   background-color: #888;
@@ -33,3 +36,11 @@
 ::-webkit-scrollbar-corner {
   background: #f1f1f1;
 }
+
+/* .no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+} */

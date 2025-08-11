@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import DataTable from "../../components/ui/Table";
+import Table from "../../components/ui/Table";
 import Actions from "../../components/ui/Actions";
 import { toast } from "react-toastify";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 import { useBillsStore } from "../../store/useBillsStore";
 import PrintModal from "./_components/PrintModal";
 import PageLoader from "../../components/ui/PageLoader";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const columns: {
   key:
@@ -29,10 +30,13 @@ const BillsPage = () => {
   const [visibleDeleteModal, setVisibleDeleteModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState<null | any>(null);
 
-  const { fetchBills, bills, loading, deleteBill } = useBillsStore();
+  const { fetchBills, bills, fetchLoading, deleteBill } = useBillsStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
-    fetchBills();
+    if (user?.role === "admin") {
+      fetchBills();
+    }
   }, []);
 
   const handleRowClick = (row: any) => {
@@ -40,6 +44,9 @@ const BillsPage = () => {
   };
 
   const handleDeleteClick = () => {
+    if (user?.role !== "admin") {
+      return toast.error("Bu işlemi gerçekleştirmek için yeterli izniniz yok.");
+    }
     if (!selectedRow) return toast.error("Lütfen bir fatura seçin.");
 
     setVisibleDeleteModal(true);
@@ -54,12 +61,13 @@ const BillsPage = () => {
   };
 
   const handlePrintClick = () => {
+    if (user?.role !== "admin") {
+      return toast.error("Bu işlemi gerçekleştirmek için yeterli izniniz yok.");
+    }
     if (!selectedRow) return toast.error("Lütfen bir fatura seçin.");
 
     setVisibleModal(true);
   };
-
-  if (loading) return <PageLoader />;
 
   return (
     <>
@@ -67,12 +75,24 @@ const BillsPage = () => {
 
       <Actions onPrint={handlePrintClick} onDelete={handleDeleteClick} />
 
-      <DataTable
-        columns={columns}
-        data={bills}
-        selectedRow={selectedRow}
-        onRowClick={handleRowClick}
-      />
+      {fetchLoading ? (
+        <PageLoader />
+      ) : (
+        <>
+          {user?.role === "admin" ? (
+            <Table
+              columns={columns}
+              data={bills}
+              selectedRow={selectedRow}
+              onRowClick={handleRowClick}
+            />
+          ) : (
+            <p className="text-center">
+              Bu sayfayı görüntülemek için yeterli izniniz yok.
+            </p>
+          )}
+        </>
+      )}
 
       <PrintModal
         visible={visibleModal}

@@ -58,7 +58,7 @@ function DataTable<T extends Record<string, any>>({
               ))}
             </tr>
 
-            <tr className="bg-gray-100">
+            <tr className="bg-gray-100 sticky top-0">
               {columns.map((col) => (
                 <th key={String(col.key)} className="px-2 py-1">
                   {!col.isImage && (
@@ -86,7 +86,7 @@ function DataTable<T extends Record<string, any>>({
                 <tr
                   key={i}
                   className={`bg-gray-50 hover:bg-gray-100 cursor-pointer ${
-                    isSelected ? "bg-primary/20" : ""
+                    isSelected ? "bg-primary-light/30" : ""
                   }`}
                   onClick={() => onRowClick && onRowClick(row)}
                 >

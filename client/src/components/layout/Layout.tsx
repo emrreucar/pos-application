@@ -1,6 +1,6 @@
 import React from "react";
 import Sidebar from "./Sidebar";
-import Header from "../../pages/home-page/_components/Header";
+import Header from "../../pages/home/_components/Header";
 import { useLocation } from "react-router-dom";
 import OrdersSummary from "../cart/OrdersSummary";
 import Navigation from "./Navigation";

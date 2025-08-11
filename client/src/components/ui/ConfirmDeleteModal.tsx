@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, X } from "lucide-react";
+import { Product } from "../../store/useProductsStore";
 
 interface ConfirmDeleteModalProps {
   open: boolean;
@@ -8,6 +9,8 @@ interface ConfirmDeleteModalProps {
   onConfirm: () => void;
   message?: string;
   buttonText?: string;
+  hasImage?: boolean;
+  selectedRow?: Product | null;
 }
 
 const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
@@ -16,6 +19,8 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
   onConfirm,
   message = "Bu satırı silmek istediğinize emin misiniz?",
   buttonText = "Evet, Sil",
+  hasImage = false,
+  selectedRow = null,
 }) => {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -53,12 +58,35 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
                 className="text-red-500 hover:bg-red-100 p-1.5 rounded-full"
                 title="Kapat"
               >
-                <X size={18} />
+                <X size={22} />
               </button>
             </div>
 
-            <div className="flex flex-col items-center justify-center gap-3">
-              <Trash2 size={36} className="text-red-500" />
+            <div
+              className={`flex flex-col items-center justify-center gap-3 ${
+                hasImage && "mt-10"
+              }`}
+            >
+              {hasImage ? (
+                <div className="flex flex-col items-center gap-2">
+                  <span className="text-sm font-semibold text-gray-700">
+                    {selectedRow?.title}
+                  </span>
+                  <img
+                    src={
+                      selectedRow?.image_url
+                        ? import.meta.env.VITE_BASE_IMAGE_URL +
+                          selectedRow?.image_url
+                        : "/images/no-image.jpg"
+                    }
+                    alt={selectedRow?.title}
+                    className="w-42 h-42 object-cover rounded-md"
+                  />
+                </div>
+              ) : (
+                <Trash2 size={36} className="text-red-500" />
+              )}
+
               <p className="text-gray-700 text-sm font-medium leading-relaxed">
                 {message}
               </p>

@@ -20,6 +20,7 @@ export interface Product {
 interface ProductsState {
   products: Product[];
   loading: boolean;
+  fetchLoading: boolean;
   error: string | null;
   isSearchMode?: boolean;
   fetchProducts: () => Promise<void>;
@@ -61,11 +62,12 @@ export const useProductsStore = create<ProductsState>((set) => ({
   products: [],
   loading: false,
   error: null,
+  fetchLoading: false,
 
   // Fetch all products
   fetchProducts: async () => {
     try {
-      set({ loading: true, error: null });
+      set({ fetchLoading: true, error: null });
       const response = await axiosInstance.get("/products");
 
       const formattedProducts = response.data.map((product: Product) => ({
@@ -75,10 +77,14 @@ export const useProductsStore = create<ProductsState>((set) => ({
         updated_at: dayjs(product.updated_at).format("DD.MM.YYYY"),
       }));
 
-      set({ products: formattedProducts, loading: false, isSearchMode: false });
+      set({
+        products: formattedProducts,
+        fetchLoading: false,
+        isSearchMode: false,
+      });
     } catch (error) {
       console.log("Ürünleri getirirken hata oluştu:", error);
-      set({ loading: false, error: "Ürünleri getirirken hata oluştu." });
+      set({ fetchLoading: false, error: "Ürünleri getirirken hata oluştu." });
     }
   },
 

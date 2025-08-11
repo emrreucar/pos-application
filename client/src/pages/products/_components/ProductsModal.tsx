@@ -91,6 +91,7 @@ const ProductsModal = ({
       setValue("productImage", "");
       setValue("category_id", null);
       setValue("stock", null);
+      setValue("status", true);
     }
   }, [selectedRow, isAddOperation]);
 
@@ -113,13 +114,12 @@ const ProductsModal = ({
       status: data.status ?? true, // Default to true if not provided
     };
 
-    if (!isAddOperation) {
-      await updateProduct(payload as any, selectedRow?.id as number);
-    } else {
-      await createProduct(payload as any);
-    }
-
     try {
+      if (!isAddOperation) {
+        await updateProduct(payload as any, selectedRow?.id as number);
+      } else {
+        await createProduct(payload as any);
+      }
       onClose();
       setSelectedRow(null);
     } catch (error) {
@@ -172,8 +172,8 @@ const ProductsModal = ({
         handleSubmit(onSubmit)();
       }}
       loading={loading}
-      height="lg:h-[60vh] h-[80vh]"
-      width="xl:max-w-[50%] max-w-[90%]"
+      height="lg:h-[80vh] h-[80vh]"
+      width="xl:max-w-[65%] max-w-[90%]"
     >
       <section className="flex flex-col lg:flex-row justify-between gap-10">
         <PreviewCard

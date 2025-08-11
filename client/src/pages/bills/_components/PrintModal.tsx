@@ -74,7 +74,11 @@ const PrintModal = ({
               <tr key={index} className="border-b">
                 <td className="border px-2 py-2 flex items-center gap-2">
                   <img
-                    src={import.meta.env.VITE_BASE_IMAGE_URL + item.image_url}
+                    src={
+                      item.image_url
+                        ? import.meta.env.VITE_BASE_IMAGE_URL + item.image_url
+                        : "/images/no-image.jpg"
+                    }
                     alt={item.title}
                     className="w-10 h-10 object-contain border rounded"
                   />

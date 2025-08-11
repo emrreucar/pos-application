@@ -13,6 +13,7 @@ export interface Category {
 interface CategoriesState {
   categories: Category[];
   loading: boolean;
+  fetchLoading: boolean;
   error: string | null;
   fetchCategories: () => Promise<void>;
   createCategory: (category: Category) => Promise<void>;
@@ -24,10 +25,11 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
   categories: [],
   loading: false,
   error: null,
+  fetchLoading: false,
 
   fetchCategories: async () => {
     try {
-      set({ loading: true, error: null });
+      set({ fetchLoading: true, error: null });
       const response = await axiosInstance.get("/categories");
 
       const formattedCategories = response.data.map((cat: Category) => ({
@@ -37,10 +39,13 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
       }));
 
       set({ categories: formattedCategories });
-      set({ loading: false });
+      set({ fetchLoading: false });
     } catch (error) {
       console.log("Kategorileri getirirken hata oluştu:", error);
-      set({ loading: false, error: "Kategorileri getirirken hata oluştu." });
+      set({
+        fetchLoading: false,
+        error: "Kategorileri getirirken hata oluştu.",
+      });
     }
   },
 

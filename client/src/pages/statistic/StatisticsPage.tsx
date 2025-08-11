@@ -11,11 +11,14 @@ const StatisticsPage = () => {
   const { customers, fetchCustomers } = useCustomersStore();
   const { products, fetchProducts } = useProductsStore();
   const { bills, fetchBills } = useBillsStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
-    fetchCustomers();
     fetchProducts();
-    fetchBills();
+    if (user?.role === "admin") {
+      fetchCustomers();
+      fetchBills();
+    }
   }, []);
 
   const DATA = [
@@ -46,7 +49,6 @@ const StatisticsPage = () => {
       imgUrl: "/icons/money.png",
     },
   ];
-  const { user } = useAuthStore();
 
   const greeting = () => {
     const currentHour = new Date().getHours();
@@ -99,7 +101,7 @@ const StatisticsPage = () => {
 
         <div className="flex flex-col lg:flex-row items-start justify-center gap-5 mt-6">
           <PieChart />
-          <AreaChart />
+          {user?.role === "admin" && <AreaChart />}
         </div>
       </div>
     </>

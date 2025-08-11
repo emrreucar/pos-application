@@ -1,48 +1,34 @@
 import { useEffect, useState } from "react";
-import DataTable from "../../components/ui/Table";
+import Table from "../../components/ui/Table";
 import Actions from "../../components/ui/Actions";
 import { toast } from "react-toastify";
-import CustomersModal from "./_components/CustomersModal";
+import CategoriesModal from "./_components/CategoriesModal";
+import { Category, useCategoriesStore } from "../../store/useCategoriesStore";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
-import { Customer, useCustomersStore } from "../../store/useCustomersStore";
 import PageLoader from "../../components/ui/PageLoader";
 
 const columns: {
-  key:
-    | "id"
-    | "name"
-    | "surname"
-    | "email"
-    | "phone_number"
-    | "address"
-    | "tc_no"
-    | "created_at"
-    | "updated_at";
+  key: "id" | "name" | "created_at" | "updated_at";
   label: string;
   isImage?: boolean;
 }[] = [
   { key: "id", label: "ID" },
-  { key: "name", label: "Müşteri Adı" },
-  { key: "surname", label: "Müşteri Soyadı" },
-  { key: "email", label: "E-posta" },
-  { key: "phone_number", label: "Telefon Numarası" },
-  { key: "address", label: "Adres" },
-  { key: "tc_no", label: "TC Kimlik No" },
+  { key: "name", label: "Kategori Adı" },
   { key: "created_at", label: "Oluşturulma Tarihi" },
   { key: "updated_at", label: "Güncellenme Tarihi" },
 ];
 
-const CustomersPage = () => {
+const CategoriesPage = () => {
   const [visibleModal, setVisibleModal] = useState(false);
   const [visibleDeleteModal, setVisibleDeleteModal] = useState(false);
   const [isAddOperation, setIsAddOperation] = useState(true);
-  const [selectedRow, setSelectedRow] = useState<Customer | null>(null);
+  const [selectedRow, setSelectedRow] = useState<Category | null>(null);
 
-  const { fetchCustomers, customers, loading, deleteCustomer } =
-    useCustomersStore();
+  const { fetchCategories, categories, fetchLoading, deleteCategory } =
+    useCategoriesStore();
 
   useEffect(() => {
-    fetchCustomers();
+    fetchCategories();
   }, []);
 
   const handleRowClick = (row: any) => {
@@ -55,44 +41,46 @@ const CustomersPage = () => {
   };
 
   const handleEditClick = () => {
-    if (!selectedRow) return toast.error("Lütfen bir müşteri seçin.");
+    if (!selectedRow) return toast.error("Lütfen bir kategori seçin.");
 
     setVisibleModal(true);
     setIsAddOperation(false);
   };
 
   const handleDeleteClick = () => {
-    if (!selectedRow) return toast.error("Lütfen bir müşteri seçin.");
+    if (!selectedRow) return toast.error("Lütfen bir kategori seçin.");
 
     setVisibleDeleteModal(true);
   };
 
   const handleDeleteConfirm = () => {
     if (selectedRow) {
-      deleteCustomer(selectedRow?.id);
+      deleteCategory(selectedRow?.id);
       setVisibleDeleteModal(false);
       setSelectedRow(null);
     }
   };
 
-  if (loading) return <PageLoader />;
-
   return (
     <>
-      <h2 className="lg:hidden block mb-5 text-3xl font-bold">Müşteriler</h2>
+      <h2 className="lg:hidden block mb-5 text-3xl font-bold">Kategoriler</h2>
       <Actions
         onAdd={handleAddClick}
         onEdit={handleEditClick}
         onDelete={handleDeleteClick}
       />
-      <DataTable
-        columns={columns}
-        data={customers}
-        selectedRow={selectedRow}
-        onRowClick={handleRowClick}
-      />
+      {fetchLoading ? (
+        <PageLoader />
+      ) : (
+        <Table
+          columns={columns}
+          data={categories}
+          selectedRow={selectedRow}
+          onRowClick={handleRowClick}
+        />
+      )}
 
-      <CustomersModal
+      <CategoriesModal
         visible={visibleModal}
         onClose={() => setVisibleModal(false)}
         isAddOperation={isAddOperation}
@@ -103,10 +91,10 @@ const CustomersPage = () => {
         open={visibleDeleteModal}
         onClose={() => setVisibleDeleteModal(false)}
         onConfirm={handleDeleteConfirm}
-        message="Dikkat! Bu müşteri kaydını sildiğinizde, bu müşteri ile ilişkili tüm veriler de silinecektir. Devam etmek istediğinize emin misiniz?"
+        message="Bu kategoriyi silmek istediğinize emin misiniz? Sildiğinizde bu kategoriye ait tüm veriler silinecektir."
       />
     </>
   );
 };
 
-export default CustomersPage;
+export default CategoriesPage;

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import DataTable from "../../components/ui/Table";
+import Table from "../../components/ui/Table";
 import Actions from "../../components/ui/Actions";
 import { toast } from "react-toastify";
 import UsersModal from "./_components/UsersModal";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 import { User, useUsersStore } from "../../store/useUsersStore";
 import PageLoader from "../../components/ui/PageLoader";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const columns: {
   key:
@@ -41,10 +42,13 @@ const UsersPage = () => {
   const [isAddOperation, setIsAddOperation] = useState(true);
   const [selectedRow, setSelectedRow] = useState<User | null>(null);
 
-  const { fetchUsers, users, loading, deleteUser } = useUsersStore();
+  const { fetchUsers, users, fetchLoading, deleteUser } = useUsersStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
-    fetchUsers();
+    if (user?.role === "admin") {
+      fetchUsers();
+    }
   }, []);
 
   const handleRowClick = (row: any) => {
@@ -52,6 +56,10 @@ const UsersPage = () => {
   };
 
   const handleEditClick = () => {
+    if (user?.role !== "admin") {
+      return toast.error("Bu işlemi gerçekleştirmek için yeterli izniniz yok.");
+    }
+
     if (!selectedRow) return toast.error("Lütfen bir kullanıcı seçin.");
 
     setVisibleModal(true);
@@ -59,6 +67,9 @@ const UsersPage = () => {
   };
 
   const handleDeleteClick = () => {
+    if (user?.role !== "admin") {
+      return toast.error("Bu işlemi gerçekleştirmek için yeterli izniniz yok.");
+    }
     if (!selectedRow) return toast.error("Lütfen bir kullanıcı seçin.");
 
     setVisibleDeleteModal(true);
@@ -72,18 +83,28 @@ const UsersPage = () => {
     }
   };
 
-  if (loading) return <PageLoader />;
-
   return (
     <>
       <h2 className="lg:hidden block mb-5 text-3xl font-bold">Kullanıcılar</h2>
       <Actions onEdit={handleEditClick} onDelete={handleDeleteClick} />
-      <DataTable
-        columns={columns}
-        data={users}
-        selectedRow={selectedRow}
-        onRowClick={handleRowClick}
-      />
+      {fetchLoading ? (
+        <PageLoader />
+      ) : (
+        <>
+          {user?.role === "admin" ? (
+            <Table
+              columns={columns}
+              data={users}
+              selectedRow={selectedRow}
+              onRowClick={handleRowClick}
+            />
+          ) : (
+            <p className="text-center">
+              Bu sayfayı görüntülemek için yeterli izniniz yok.
+            </p>
+          )}
+        </>
+      )}
 
       <UsersModal
         visible={visibleModal}

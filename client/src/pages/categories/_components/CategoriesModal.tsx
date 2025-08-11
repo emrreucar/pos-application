@@ -34,24 +34,29 @@ const CategoriesModal = ({
     register,
     watch,
     handleSubmit,
+    reset,
+    clearErrors,
     setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      name: "",
+    },
   });
 
   const watchCategoryName = watch("name");
 
   const onSubmit = async (data: FormData) => {
-    try {
-      const payload = {
-        name: data.name,
-      };
+    const payload = {
+      name: data.name,
+    };
 
-      if (isAddOperation) {
-        await createCategory(payload as Category);
-      } else {
+    try {
+      if (!isAddOperation) {
         await updateCategory(payload as Category, selectedRow?.id as number);
+      } else {
+        await createCategory(payload as Category);
       }
       onClose();
       setSelectedRow(null);
@@ -69,19 +74,14 @@ const CategoriesModal = ({
     }
   }, [selectedRow, isAddOperation]);
 
-  const resetValues = () => {
-    setValue("name", "");
-  };
-
   return (
     <Modal
       open={visible}
       title={isAddOperation ? "Kategori Ekle" : "Kategori Düzenle"}
       onClose={() => {
+        reset();
+        clearErrors();
         onClose();
-        if (isAddOperation) {
-          resetValues();
-        }
       }}
       onConfirm={() => {
         handleSubmit(onSubmit)();
@@ -94,7 +94,7 @@ const CategoriesModal = ({
           label="Kategori Adı"
           value={watchCategoryName}
           {...register("name")}
-          errorMessage={errors.name?.message}
+          errorMessage={errors.name?.message as string}
           required
         />
       </form>

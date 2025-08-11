@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DataTable from "../../components/ui/Table";
+import Table from "../../components/ui/Table";
 import { Product, useProductsStore } from "../../store/useProductsStore";
 import { toast } from "react-toastify";
 import ProductsModal from "./_components/ProductsModal";
@@ -39,7 +39,7 @@ const ProductsPage = () => {
 
   const [checked, setChecked] = useState(true);
 
-  const { products, deleteProduct, fetchProducts, loading } =
+  const { products, deleteProduct, fetchProducts, fetchLoading } =
     useProductsStore();
 
   useEffect(() => {
@@ -79,8 +79,6 @@ const ProductsPage = () => {
   const activeProducts = products.filter((product) => product.status);
   const inactiveProducts = products.filter((product) => !product.status);
 
-  if (loading) return <PageLoader />;
-
   return (
     <>
       <h2 className="lg:hidden block mb-5 text-3xl font-bold">Ürünler</h2>
@@ -101,12 +99,17 @@ const ProductsPage = () => {
           }}
         />
       </div>
-      <DataTable
-        columns={columns}
-        data={checked ? activeProducts : inactiveProducts}
-        selectedRow={selectedRow}
-        onRowClick={handleRowClick}
-      />
+
+      {fetchLoading ? (
+        <PageLoader />
+      ) : (
+        <Table
+          columns={columns}
+          data={checked ? activeProducts : inactiveProducts}
+          selectedRow={selectedRow}
+          onRowClick={handleRowClick}
+        />
+      )}
 
       <ProductsModal
         visible={visibleProductsModal}
@@ -121,6 +124,8 @@ const ProductsPage = () => {
         onConfirm={handleDeleteConfirm}
         message="Ürün durumu pasife çekilecek. Devam etmek istiyor musunuz?"
         buttonText="Pasife Çek"
+        hasImage
+        selectedRow={selectedRow}
       />
     </>
   );

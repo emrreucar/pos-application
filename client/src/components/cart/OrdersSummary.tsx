@@ -1,16 +1,92 @@
 import { useCartStore } from "../../store/useCartStore";
 import { formatCurrency } from "../../lib/utils";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { CheckCheckIcon, Minus, Plus, Trash } from "lucide-react";
+import {
+  Check,
+  CheckCheckIcon,
+  ChevronDown,
+  Minus,
+  Plus,
+  Trash,
+} from "lucide-react";
 import { useState } from "react";
 import ConfirmDeleteModal from "../ui/ConfirmDeleteModal";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useProductsStore } from "../../store/useProductsStore";
+import { ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 
 const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
+  const [draftPrices, setDraftPrices] = useState<Record<number, string>>({});
   const [visibleDeleteModal, setVisibleDeleteModal] = useState(false);
-  const { cartItems, totalPrice, removeFromCart, changeQuantity, clearCart } =
-    useCartStore();
+  const [showChangePrice, setShowChangePrice] = useState<number | null>(null);
+
+  const {
+    cartItems,
+    totalPrice,
+    removeFromCart,
+    changeQuantity,
+    clearCart,
+    changePrice,
+  } = useCartStore();
+
+  const { products } = useProductsStore();
+
+  const activeProducts = products.filter((product) => product.status);
+  const findProductPrice = (id: number) => {
+    const product = activeProducts.find((item) => item.id === id);
+    return product ? product.price : 0;
+  };
+
+  const applyPrice = (itemId: number) => {
+    const raw = draftPrices[itemId];
+
+    // input hiç değişmemiş ya da boşsa -> orijinal fiyatı dön
+    if (!raw || raw.trim() === "") {
+      changePrice(itemId, findProductPrice(itemId)); // store'a orijinal fiyatı yazdım.
+      setDraftPrices((p) => {
+        const { [itemId]: _, ...rest } = p;
+        return rest; // taslağı temizledim
+      });
+      toast.info("Fiyat orijinale döndü");
+      return;
+    }
+
+    const parsed = parseFloat(raw.replace(",", "."));
+    if (isNaN(parsed) || parsed < 0) {
+      toast.error("Geçerli bir fiyat gir.");
+      return;
+    }
+
+    changePrice(itemId, parsed);
+    toast.success("Fiyat güncellendi!");
+  };
+
+  const calculatePercentage = (itemId: number) => {
+    const originalPrice = findProductPrice(itemId); // orijinal back-end fiyatı
+
+    // 1. Orijinal fiyatı yoksa,  sıfır veya küçükse hesaplama yapma
+    if (!originalPrice || originalPrice <= 0) return 0;
+
+    // 2. Mevcut fiyat: draft varsa onu al, yoksa sepet item fiyatını, o da yoksa orijinal
+    const raw = draftPrices[itemId];
+    const draftParsed =
+      raw && raw.trim() !== "" ? parseFloat(raw.replace(",", ".")) : NaN;
+
+    const item = cartItems.find((x) => x.id === itemId);
+    const currentFromCart = item?.product.price ?? originalPrice; // item.product.price null veya undefined ise originalPrice kullan
+
+    const currentPrice = !isNaN(draftParsed) ? draftParsed : currentFromCart;
+
+    // 3. Hatalı değer guard’ı
+    if (isNaN(currentPrice) || currentPrice <= 0) return 0;
+
+    // 4) + zam, - indirim
+    const delta = currentPrice - originalPrice;
+    const pct = (delta / originalPrice) * 100;
+
+    return Number(pct.toFixed(1)); // 1 basamak
+  };
 
   return (
     <>
@@ -33,8 +109,7 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
               className="w-full h-96 mb-4 object-contain"
             />
             <p className="text-gray-500 text-lg font-semibold">
-              Sepetinde hâlâ bir şey yok 🤔 <br />
-              Hadi birkaç ürün eklemeye ne dersin?
+              Sepetinizde hiç ürün yok.
             </p>
           </div>
         ) : (
@@ -45,6 +120,7 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
                   key={item.id}
                   className="flex justify-between items-start mb-2 border border-gray-200 p-2 rounded-md"
                 >
+                  {/* left side */}
                   <div className="flex items-start gap-2 h-full">
                     <img
                       src={
@@ -62,12 +138,115 @@ const OrdersSummary = ({ showCart }: { showCart?: boolean }) => {
                           ? item.product.title.slice(0, 20) + "..."
                           : item.product.title}
                       </span>
-                      <span className="font-semibold text-sm mt-5">
-                        {formatCurrency(item.product.price)}
-                      </span>
+
+                      <div
+                        className="text-sm font-semibold text-red-600 flex items-center gap-1 cursor-pointer select-none"
+                        onClick={() => {
+                          setShowChangePrice(
+                            showChangePrice === item.id ? null : item.id
+                          );
+                        }}
+                      >
+                        Fiyat Değiştir{" "}
+                        <ChevronDown
+                          size={15}
+                          className={`transition-all duration-300 ${
+                            showChangePrice === item.id ? "rotate-180" : ""
+                          }`}
+                        />
+                      </div>
+
+                      {showChangePrice === item.id ? (
+                        <div className="flex items-center gap-2 mt-3 ">
+                          <input
+                            type="number"
+                            value={draftPrices[item.id] ?? ""} // ürüne özgü değeri atadım.
+                            onChange={(e) => {
+                              const v = e.target.value;
+                              // sadece sayı yazacak.
+                              if (/^[0-9]*[.,]?[0-9]*$/.test(v) || v === "") {
+                                setDraftPrices((prev) => ({
+                                  ...prev,
+                                  [item.id]: v,
+                                }));
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") applyPrice(item.id);
+                              if (e.key === "Escape") {
+                                // iptal -> taslağı temizle
+                                setDraftPrices((p) => {
+                                  const { [item.id]: _, ...rest } = p;
+                                  return rest;
+                                });
+                                setShowChangePrice(null);
+                              }
+                            }}
+                            className="border border-gray-300 rounded-md p-1 w-2/3 text-sm placeholder:text-xs"
+                            placeholder="Yeni fiyat"
+                          />
+                          <Check
+                            size={18}
+                            color="#28a745"
+                            className="cursor-pointer hover:text-green-600 transition-colors duration-200 ease-in-out"
+                            onClick={() => {
+                              applyPrice(item.id);
+                              setShowChangePrice(null);
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <span className="font-semibold text-sm mt-3">
+                          {/* Geçerli fiyat ile orijinal fiyatı kıyaslayacağım */}
+                          {(() => {
+                            const original = findProductPrice(item.id);
+                            const current = item.product.price ?? original; // store, item.product.price'ı güncelliyor olmalı
+
+                            const pct = calculatePercentage(item.id);
+
+                            return current !== original ? (
+                              <div className="flex gap-4 items-center">
+                                <div className="flex flex-col gap-px">
+                                  <span className="line-through text-gray-500">
+                                    {formatCurrency(original)}
+                                  </span>
+                                  <span>{formatCurrency(current)}</span>
+                                </div>
+                                {pct !== 0 && (
+                                  <span className="flex items-center gap-1 text-sm font-semibold">
+                                    {pct > 0 ? (
+                                      <ArrowUpCircle
+                                        size={15}
+                                        className="text-red-500"
+                                      />
+                                    ) : (
+                                      <ArrowDownCircle
+                                        size={15}
+                                        className="text-green-500"
+                                      />
+                                    )}
+                                    <span
+                                      className={
+                                        pct > 0
+                                          ? "text-red-500"
+                                          : "text-green-500"
+                                      }
+                                    >
+                                      %{pct}
+                                    </span>
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <>{formatCurrency(original)}</>
+                            );
+                          })()}
+                        </span>
+                      )}
                     </div>
                   </div>
 
+                  {/* right side */}
                   <div className="flex flex-col items-end justify-between">
                     <FaRegTrashAlt
                       color="#ff0000"

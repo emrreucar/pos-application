@@ -13,6 +13,7 @@ interface CartStore {
   cartItems: CartItem[];
   addToCart: (item: Product) => void;
   changeQuantity: (itemId: number, quantity: number) => void;
+  changePrice: (itemId: number, newPrice: number) => void;
   removeFromCart: (itemId: number) => void;
   clearCart: () => void;
   getCart: () => CartItem[];
@@ -75,6 +76,23 @@ export const useCartStore = create<CartStore>()(
             ),
           };
         });
+      },
+
+      // change item price
+      changePrice: (itemId, newPrice) => {
+        set((state) => ({
+          cartItems: state.cartItems.map((item) =>
+            item.id === itemId
+              ? {
+                  ...item,
+                  product: {
+                    ...item.product,
+                    price: newPrice,
+                  },
+                }
+              : item
+          ),
+        }));
       },
 
       // Remove item from cart

@@ -93,7 +93,7 @@ export const createBill = async (req, res) => {
     const transaction = new mssql.Transaction(pool);
     await transaction.begin();
 
-    // *** TÜM STOĞU KONTROL ET ***
+    // TÜM STOĞU KONTROL ET
     for (const item of cart_items) {
       const stockCheckResult = await transaction
         .request()

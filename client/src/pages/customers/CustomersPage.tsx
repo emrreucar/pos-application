@@ -1,0 +1,136 @@
+import { useEffect, useState } from "react";
+import Table from "../../components/ui/Table";
+import Actions from "../../components/ui/Actions";
+import { toast } from "react-toastify";
+import CustomersModal from "./_components/CustomersModal";
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
+import { Customer, useCustomersStore } from "../../store/useCustomersStore";
+import PageLoader from "../../components/ui/PageLoader";
+import { useAuthStore } from "../../store/useAuthStore";
+
+const columns: {
+  key:
+    | "id"
+    | "name"
+    | "surname"
+    | "email"
+    | "phone_number"
+    | "address"
+    | "tc_no"
+    | "created_at"
+    | "updated_at";
+  label: string;
+  isImage?: boolean;
+}[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Müşteri Adı" },
+  { key: "surname", label: "Müşteri Soyadı" },
+  { key: "email", label: "E-posta" },
+  { key: "phone_number", label: "Telefon Numarası" },
+  { key: "address", label: "Adres" },
+  { key: "tc_no", label: "TC Kimlik No" },
+  { key: "created_at", label: "Oluşturulma Tarihi" },
+  { key: "updated_at", label: "Güncellenme Tarihi" },
+];
+
+const CustomersPage = () => {
+  const [visibleModal, setVisibleModal] = useState(false);
+  const [visibleDeleteModal, setVisibleDeleteModal] = useState(false);
+  const [isAddOperation, setIsAddOperation] = useState(true);
+  const [selectedRow, setSelectedRow] = useState<Customer | null>(null);
+
+  const { fetchCustomers, customers, fetchLoading, deleteCustomer } =
+    useCustomersStore();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      fetchCustomers();
+    }
+  }, []);
+
+  const handleRowClick = (row: any) => {
+    setSelectedRow(row);
+  };
+
+  const handleAddClick = () => {
+    if (user?.role !== "admin") {
+      return toast.error("Bu işlemi gerçekleştirmek için yeterli izniniz yok.");
+    }
+
+    setVisibleModal(true);
+    setIsAddOperation(true);
+  };
+
+  const handleEditClick = () => {
+    if (user?.role !== "admin") {
+      return toast.error("Bu işlemi gerçekleştirmek için yeterli izniniz yok.");
+    }
+    if (!selectedRow) return toast.error("Lütfen bir müşteri seçin.");
+
+    setVisibleModal(true);
+    setIsAddOperation(false);
+  };
+
+  const handleDeleteClick = () => {
+    if (user?.role !== "admin") {
+      return toast.error("Bu işlemi gerçekleştirmek için yeterli izniniz yok.");
+    }
+    if (!selectedRow) return toast.error("Lütfen bir müşteri seçin.");
+
+    setVisibleDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedRow) {
+      deleteCustomer(selectedRow?.id);
+      setVisibleDeleteModal(false);
+      setSelectedRow(null);
+    }
+  };
+
+  return (
+    <>
+      <h2 className="lg:hidden block mb-5 text-3xl font-bold">Müşteriler</h2>
+      <Actions
+        onAdd={handleAddClick}
+        onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
+      />
+      {fetchLoading ? (
+        <PageLoader />
+      ) : (
+        <>
+          {user?.role === "admin" ? (
+            <Table
+              columns={columns}
+              data={customers}
+              selectedRow={selectedRow}
+              onRowClick={handleRowClick}
+            />
+          ) : (
+            <p className="text-center">
+              Bu sayfayı görüntülemek için yeterli izniniz yok.
+            </p>
+          )}
+        </>
+      )}
+
+      <CustomersModal
+        visible={visibleModal}
+        onClose={() => setVisibleModal(false)}
+        isAddOperation={isAddOperation}
+        selectedRow={selectedRow}
+        setSelectedRow={setSelectedRow}
+      />
+      <ConfirmDeleteModal
+        open={visibleDeleteModal}
+        onClose={() => setVisibleDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        message="Dikkat! Bu müşteri kaydını sildiğinizde, bu müşteri ile ilişkili tüm veriler de silinecektir. Devam etmek istediğinize emin misiniz?"
+      />
+    </>
+  );
+};
+
+export default CustomersPage;
