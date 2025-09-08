@@ -50,10 +50,9 @@ const Button: React.FC<ButtonProps> = ({
         loading && "cursor-not-allowed pointer-events-none opacity-50",
         className
       )}
+      disabled={loading || rest.disabled}
     >
-      {leftIcon && !loading && (
-        <span className="flex items-center">{leftIcon}</span>
-      )}
+      {leftIcon && <span className="flex items-center">{leftIcon}</span>}
       <div className="flex items-center gap-2 select-none">
         {children}
         {loading && <LuLoaderCircle className="size-4 animate-spin" />}

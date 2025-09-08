@@ -106,8 +106,12 @@ function DataTable<T extends Record<string, any>>({
                           alt={col.label}
                           className="w-10 h-10 object-cover rounded-full"
                         />
+                      ) : row[col.key].length > 35 ? (
+                        <span title={row[col.key]}>
+                          {row[col.key].slice(0, 35)}...
+                        </span>
                       ) : (
-                        row[col.key]
+                        <span>{row[col.key]}</span>
                       )}
                     </td>
                   ))}

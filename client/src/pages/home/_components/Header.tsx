@@ -84,7 +84,7 @@ const Header = ({
         <div className="relative flex items-center justify-center w-full shadow-md rounded-xl">
           <input
             type="text"
-            placeholder="Ürün Ara..."
+            placeholder="Ürün veya kategori ara..."
             className="w-full h-12 px-10 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             value={searchTerm}
             onChange={handleSearch}

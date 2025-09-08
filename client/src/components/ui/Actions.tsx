@@ -1,7 +1,7 @@
 import { Plus, X } from "lucide-react";
 import React from "react";
 import { CiEdit } from "react-icons/ci";
-import { IoMdPrint } from "react-icons/io";
+import { IoMdMail, IoMdPrint } from "react-icons/io";
 
 interface ActionsProps {
   onAdd?: () => void;
@@ -11,6 +11,7 @@ interface ActionsProps {
   onDelete?: () => void;
   deleteTitle?: string;
   onPrint?: () => void;
+  onEmail?: () => void;
 }
 
 const Actions: React.FC<ActionsProps> = ({
@@ -21,6 +22,7 @@ const Actions: React.FC<ActionsProps> = ({
   onDelete,
   deleteTitle = "Sil",
   onPrint,
+  onEmail,
 }) => {
   return (
     <div className="flex gap-2 mb-4 base__card__container">
@@ -51,6 +53,16 @@ const Actions: React.FC<ActionsProps> = ({
           className="bg-slate-800 text-white rounded-md p-1.5 hover:bg-slate-700 transition"
         >
           <IoMdPrint size={15} />
+        </button>
+      )}
+
+      {onEmail && (
+        <button
+          onClick={onEmail}
+          title="Faturayı Mail'e Gönder"
+          className="bg-slate-800 text-white rounded-md p-1.5 hover:bg-slate-700 transition"
+        >
+          <IoMdMail size={15} />
         </button>
       )}
 

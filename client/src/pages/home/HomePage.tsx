@@ -24,7 +24,6 @@ const HomePage = () => {
 
     if (location.pathname === "/") {
       fetchProducts();
-      setSelectedCategory(null);
     }
   }, [location]);
 

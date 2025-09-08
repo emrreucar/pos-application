@@ -259,3 +259,61 @@ export const getProductReport = async (req, res) => {
     return res.status(500).json({ message: "Ürün raporu alırken hata!" });
   }
 };
+
+// Send Bill to customers email
+export const sendBillEmail = async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Yetkiniz yok!" });
+  }
+
+  const billId = req.params.id;
+
+  if (!billId) {
+    return res.status(400).json({ message: "Geçersiz fatura ID'si" });
+  }
+
+  try {
+    const pool = await poolPromise;
+
+    // 1. Fatura bilgilerini al
+    const billResult = await pool.request().input("id", billId).query(`
+      SELECT b.id, b.total_amount, c.email AS customer_email
+      FROM bills b
+      JOIN customers c ON b.customer_id = c.id
+      WHERE b.id = @id
+    `);
+
+    const bill = billResult.recordset[0];
+
+    if (!bill) {
+      return res.status(404).json({ message: "Fatura bulunamadı" });
+    }
+
+    // 2. E-posta gönder
+    const transporter = nodemailer.createTransport({
+      host: "smtp.example.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "your-email@example.com",
+        pass: "your-email-password",
+      },
+    });
+
+    const mailOptions = {
+      from: "your-email@example.com",
+      to: bill.customer_email,
+      subject: `Fatura #${bill.id}`,
+      text: `Faturanızın toplam tutarı: ${bill.total_amount} TL`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Fatura e-postası başarıyla gönderildi" });
+  } catch (error) {
+    console.log("Fatura e-postası gönderme hatası: ", error);
+    return res
+      .status(500)
+      .json({ message: "Fatura e-postası gönderme hatası!" });
+  }
+};

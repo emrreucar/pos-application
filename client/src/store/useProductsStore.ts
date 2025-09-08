@@ -228,7 +228,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
         updated_at: dayjs(product.updated_at).format("DD.MM.YYYY"),
       }));
 
-      set({ products: formattedProducts, loading: false, isSearchMode: true });
+      set({ products: formattedProducts, loading: false });
 
       return formattedProducts;
     } catch (error) {

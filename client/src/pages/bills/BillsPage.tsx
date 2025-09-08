@@ -69,11 +69,19 @@ const BillsPage = () => {
     setVisibleModal(true);
   };
 
+  const handleEmailClick = () => {
+    console.log("E-posta gönderiliyor...");
+  };
+
   return (
     <>
       <h2 className="lg:hidden block mb-5 text-3xl font-bold">Faturalar</h2>
 
-      <Actions onPrint={handlePrintClick} onDelete={handleDeleteClick} />
+      <Actions
+        onPrint={handlePrintClick}
+        onDelete={handleDeleteClick}
+        onEmail={handleEmailClick}
+      />
 
       {fetchLoading ? (
         <PageLoader />

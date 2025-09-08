@@ -81,7 +81,6 @@ const SelectCategoryChips = ({
         ))}
       </div>
 
-      {/* opsiyonel: küçük bir alt çizgi */}
       <div className="h-px w-full bg-gray-200" />
     </div>
   );
