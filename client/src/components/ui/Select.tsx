@@ -79,7 +79,7 @@ const Select: React.FC<SelectProps> = ({
           }}
           onClick={() => setIsOpen(true)}
           readOnly={!isOpen}
-          className={`outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full border px-3 py-2 rounded-md bg-white text-sm text-gray-700 shadow-sm hover:border-gray-200 ${
+          className={`outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full border px-3 py-3 rounded-md bg-white text-sm text-gray-700 shadow-sm hover:border-gray-200 ${
             errorMessage ? "border-red-500" : ""
           }`}
           placeholder={placeholder}

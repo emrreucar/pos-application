@@ -12,6 +12,7 @@ interface ActionsProps {
   deleteTitle?: string;
   onPrint?: () => void;
   onEmail?: () => void;
+  loading?: boolean;
 }
 
 const Actions: React.FC<ActionsProps> = ({
@@ -23,6 +24,7 @@ const Actions: React.FC<ActionsProps> = ({
   deleteTitle = "Sil",
   onPrint,
   onEmail,
+  loading = false,
 }) => {
   return (
     <div className="flex gap-2 mb-4 base__card__container">
@@ -56,16 +58,6 @@ const Actions: React.FC<ActionsProps> = ({
         </button>
       )}
 
-      {onEmail && (
-        <button
-          onClick={onEmail}
-          title="Faturayı Mail'e Gönder"
-          className="bg-slate-800 text-white rounded-md p-1.5 hover:bg-slate-700 transition"
-        >
-          <IoMdMail size={15} />
-        </button>
-      )}
-
       {onDelete && (
         <button
           onClick={onDelete}
@@ -74,6 +66,24 @@ const Actions: React.FC<ActionsProps> = ({
         >
           <X size={15} />
         </button>
+      )}
+
+      {loading ? (
+        <div className="flex items-center justify-center px-3 border rounded-md">
+          <div className="w-4 h-4 border-2 border-t-transparent border-blue-700 rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <>
+          {onEmail && (
+            <button
+              onClick={onEmail}
+              title="Faturayı Mail'e Gönder"
+              className="bg-slate-800 text-white rounded-md p-1.5 hover:bg-slate-700 transition"
+            >
+              <IoMdMail size={15} />
+            </button>
+          )}
+        </>
       )}
     </div>
   );

@@ -5,6 +5,7 @@ import {
   getBill,
   getBills,
   getProductReport,
+  sendBillEmail,
   updateBill,
 } from "../controllers/bills.controller.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
@@ -18,5 +19,7 @@ router.put("/bills/:id", verifyToken, updateBill);
 router.delete("/bills/:id", verifyToken, deleteBill);
 
 router.get("/bills/report/products", verifyToken, getProductReport);
+
+router.get("/send-email/:id", verifyToken, sendBillEmail);
 
 export default router;

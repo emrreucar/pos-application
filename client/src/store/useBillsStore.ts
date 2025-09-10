@@ -63,6 +63,8 @@ export const useBillsStore = create<BillState>((set) => ({
     try {
       set({ fetchLoading: true, error: null });
       const response = await axiosInstance.get("/bills");
+      console.log("response -> ", response);
+
       const formattedBills = response.data.map((bill: Bill) => ({
         ...bill,
         created_at: dayjs(bill.created_at).format("DD.MM.YYYY"),
@@ -116,10 +118,24 @@ export const useBillsStore = create<BillState>((set) => ({
 
       toast.success("Fatura başarıyla silindi.");
     } catch (error) {
+      toast.error("Fatura silinirken bir hata oluştu.");
       console.log("Fatura silinirken hata oluştu:", error);
       set({ loading: false, error: "Fatura silinirken hata oluştu." });
     }
   },
+
+  // updateBill: async (bill: any, id: number) => {
+  //   try {
+  //     set({ loading: true, error: null });
+  //     const response = await axiosInstance.put(`/bills/${id}`, bill);
+  //     const updatedBill = {
+  //       ...response.data,
+  //       created_at: dayjs(response.data.created_at).format("DD.MM.YYYY"),
+  //     };
+  //   } catch (error) {
+
+  //   }
+  // },
 
   getReportProducts: async () => {
     try {

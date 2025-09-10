@@ -85,14 +85,14 @@ function DataTable<T extends Record<string, any>>({
               return (
                 <tr
                   key={i}
-                  className={`bg-gray-50 hover:bg-gray-100 cursor-pointer ${
-                    isSelected ? "bg-primary-light/30" : ""
+                  className={`bg-gray-50  cursor-pointer ${
+                    isSelected ? "bg-primary-light/30" : "hover:bg-gray-100"
                   }`}
                   onClick={() => onRowClick && onRowClick(row)}
                 >
-                  {columns.map((col) => (
+                  {columns?.map((col) => (
                     <td
-                      key={String(col.key)}
+                      key={String(col?.key)}
                       className="px-3 py-1 whitespace-nowrap text-sm font-semibold text-gray-800"
                     >
                       {col.isImage ? (
@@ -106,12 +106,22 @@ function DataTable<T extends Record<string, any>>({
                           alt={col.label}
                           className="w-10 h-10 object-cover rounded-full"
                         />
-                      ) : row[col.key].length > 35 ? (
-                        <span title={row[col.key]}>
-                          {row[col.key].slice(0, 35)}...
+                      ) : row?.[col?.key]?.length > 35 ? (
+                        <span title={row?.[col?.key]}>
+                          {row?.[col?.key].slice(0, 35)}...
                         </span>
                       ) : (
-                        <span>{row[col.key]}</span>
+                        <span>
+                          {row?.[col?.key] === "pending" ? (
+                            <span className="text-red-500">Beklemede</span>
+                          ) : row?.[col?.key] === "partial" ? (
+                            <span className="text-yellow-500">Kısmi Ödeme</span>
+                          ) : row?.[col?.key] === "paid" ? (
+                            <span className="text-green-500">Ödendi</span>
+                          ) : (
+                            row?.[col?.key]
+                          )}
+                        </span>
                       )}
                     </td>
                   ))}

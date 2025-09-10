@@ -17,7 +17,9 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:7000",
+  "http://[::1]:7000",
   "https://www.pos.mereminsoft.com",
+  "https://pos.mereminsoft.com",
 ];
 
 //! middleware

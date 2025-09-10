@@ -32,7 +32,7 @@ const PrintModal = ({
       onPrint={handlePrint}
       onClose={onClose}
       title="Fatura Yazdır"
-      width="max-w-4xl"
+      width="max-w-5xl"
       height="h-[95vh]"
       showConfirmButton={false}
     >

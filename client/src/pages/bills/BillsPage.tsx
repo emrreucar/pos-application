@@ -7,6 +7,8 @@ import { useBillsStore } from "../../store/useBillsStore";
 import PrintModal from "./_components/PrintModal";
 import PageLoader from "../../components/ui/PageLoader";
 import { useAuthStore } from "../../store/useAuthStore";
+import { axiosInstance } from "../../lib/axios";
+import BillsModal from "./_components/BillsModal";
 
 const columns: {
   key:
@@ -14,7 +16,8 @@ const columns: {
     | "customer_name_surname"
     | "payment_method"
     | "total_amount"
-    | "created_at";
+    | "created_at"
+    | "status";
   label: string;
   isImage?: boolean;
 }[] = [
@@ -23,12 +26,15 @@ const columns: {
   { key: "payment_method", label: "Ödeme Yöntemi" },
   { key: "total_amount", label: "Toplam Tutar" },
   { key: "created_at", label: "Oluşturulma Tarihi" },
+  { key: "status", label: "Durum" },
 ];
 
 const BillsPage = () => {
   const [visibleModal, setVisibleModal] = useState(false);
   const [visibleDeleteModal, setVisibleDeleteModal] = useState(false);
+  const [visibleEditModal, setVisibleEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState<null | any>(null);
+  const [loading, setLoading] = useState(false);
 
   const { fetchBills, bills, fetchLoading, deleteBill } = useBillsStore();
   const { user } = useAuthStore();
@@ -69,8 +75,28 @@ const BillsPage = () => {
     setVisibleModal(true);
   };
 
-  const handleEmailClick = () => {
-    console.log("E-posta gönderiliyor...");
+  const handleEmailClick = async () => {
+    try {
+      setLoading(true);
+      const res = await axiosInstance.get(`/send-email/${selectedRow.id}`);
+      console.log(res);
+      toast.success("E-posta başarıyla gönderildi.");
+    } catch (error) {
+      console.error(error);
+      toast.error("E-posta gönderilirken bir hata oluştu.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditClick = () => {
+    if (user?.role !== "admin") {
+      return toast.error("Bu işlemi gerçekleştirmek için yeterli izniniz yok.");
+    }
+
+    if (!selectedRow) return toast.error("Lütfen bir fatura seçin.");
+
+    setVisibleEditModal(true);
   };
 
   return (
@@ -81,6 +107,8 @@ const BillsPage = () => {
         onPrint={handlePrintClick}
         onDelete={handleDeleteClick}
         onEmail={handleEmailClick}
+        onEdit={handleEditClick}
+        loading={loading}
       />
 
       {fetchLoading ? (
@@ -108,11 +136,22 @@ const BillsPage = () => {
         selectedRow={selectedRow}
       />
 
+      <BillsModal
+        visible={visibleEditModal}
+        onClose={() => {
+          setVisibleEditModal(false);
+          setSelectedRow(null);
+          fetchBills();
+        }}
+        selectedRow={selectedRow}
+        setVisibleEditModal={setVisibleEditModal}
+      />
+
       <ConfirmDeleteModal
         open={visibleDeleteModal}
         onClose={() => setVisibleDeleteModal(false)}
         onConfirm={handleDeleteConfirm}
-        message="Bu faturayı silmek istediğinize emin misiniz?"
+        message="Bu faturayı silmek istediğinize emin misiniz? Silme işlemi geri alınamaz."
       />
     </>
   );

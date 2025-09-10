@@ -93,7 +93,7 @@ const ConfirmOrderModal = ({
       onConfirm={() => {
         handleSubmit(onSubmit)();
       }}
-      height="lg:h-[40vh] h-[60vh]"
+      height="lg:h-[50vh] h-[60vh]"
       width="lg:max-w-[35%] sm:max-w-[60%] max-w-[90%]"
     >
       <form

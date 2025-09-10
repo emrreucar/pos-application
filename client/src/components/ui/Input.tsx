@@ -6,7 +6,7 @@ interface InputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
   label: string;
   value: string;
-  type?: "text" | "email" | "password" | "number" | "tel";
+  type?: "text" | "email" | "password" | "number" | "tel" | "date";
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   inputSize?: "sm" | "md" | "lg";
   icon?: React.ReactNode;

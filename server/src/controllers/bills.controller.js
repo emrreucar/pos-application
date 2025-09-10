@@ -1,4 +1,5 @@
 import { mssql, poolPromise } from "../lib/db.js";
+import nodemailer from "nodemailer";
 
 // GET /bills -> Get all bills
 export const getBills = async (req, res) => {
@@ -15,6 +16,8 @@ export const getBills = async (req, res) => {
             b.id,
             b.customer_id,
             b.total_amount,
+            b.payment_method_id,
+            b.status,
             FORMAT(b.created_at, 'yyyy-MM-dd HH:mm') AS created_at,
             c.name + ' ' + c.surname AS customer_name_surname,
             pm.name AS payment_method
@@ -36,6 +39,28 @@ export const getBills = async (req, res) => {
     // 2. her fatura için, fatura kalemlerini getir
     const billIds = bills.map((bill) => bill.id);
 
+    // her fatura için ödeme kalemlerini de getir
+    const totalPaymentsResult = await pool.query(`
+      SELECT
+        bill_id,
+        SUM(amount) AS total_paid
+      FROM bill_payments
+      WHERE bill_id IN (${billIds.join(",")})
+      GROUP BY bill_id
+    `);
+
+    const paymentItemsResult = await pool.query(`
+  SELECT
+    bp.id,
+    bp.bill_id,
+    bp.amount,
+    bp.payment_date,
+    pm.name AS payment_method
+  FROM bill_payments bp
+  JOIN payment_methods pm ON bp.payment_method_id = pm.id
+  WHERE bp.bill_id IN (${billIds.join(",")})
+`);
+
     // 3. tüm item'leri topluca çek
     const itemsResult = await pool.query(`SELECT 
         bi.bill_id,
@@ -50,12 +75,17 @@ export const getBills = async (req, res) => {
     `);
 
     const allItems = itemsResult.recordset;
+    const totalPayments = totalPaymentsResult.recordset;
+    const allPaymentItems = paymentItemsResult.recordset;
 
     // 4. her faturaya ait item'leri eşleştir
     const billsWithItems = bills.map((bill) => {
       return {
         ...bill,
         cart_items: allItems.filter((item) => item.bill_id === bill.id),
+        payments: allPaymentItems.filter((p) => p.bill_id === bill.id),
+        total_paid:
+          totalPayments.find((p) => p.bill_id === bill.id)?.total_paid || 0,
       };
     });
 
@@ -86,11 +116,13 @@ export const createBill = async (req, res) => {
     return res.status(400).json({ message: "Geçersiz veri gönderildi" });
   }
 
+  let transaction;
+
   try {
     const pool = await poolPromise;
     // transaction amacı -> Tüm işlemlerin otomatik olarak ya hepsinin başarılı olması ya da hepsinin geri alınması
     // örnek -> fatura kalemlerini eklerken bir sorun çıkarsa, faturayı ve kalemlerini geri al
-    const transaction = new mssql.Transaction(pool);
+    transaction = new mssql.Transaction(pool);
     await transaction.begin();
 
     // TÜM STOĞU KONTROL ET
@@ -119,13 +151,14 @@ export const createBill = async (req, res) => {
     }, 0);
 
     // 2. Fatura oluştur
-    const billResult = await pool
+    const billResult = await transaction
       .request()
       .input("customer_id", customer_id)
       .input("payment_method_id", payment_method_id)
       .input("total_amount", totalAmount)
+      .input("status", "pending")
       .query(
-        "INSERT INTO bills (customer_id, payment_method_id, total_amount, created_at, updated_at) OUTPUT INSERTED.id VALUES (@customer_id, @payment_method_id, @total_amount, SYSDATETIME(), SYSDATETIME())"
+        "INSERT INTO bills (customer_id, payment_method_id, total_amount, status, created_at, updated_at) OUTPUT INSERTED.id VALUES (@customer_id, @payment_method_id, @total_amount, @status, SYSDATETIME(), SYSDATETIME())"
       );
 
     const billId = billResult.recordset[0].id;
@@ -151,6 +184,26 @@ export const createBill = async (req, res) => {
         .query(
           `UPDATE products SET stock = stock - @quantity WHERE id = @product_id`
         );
+    }
+
+    // Eğer ödeme yöntemi nakit(1), kredi kartı(2) veya havale(4) ise ödeme kaydı ekle
+    if ([1, 2, 4].includes(payment_method_id)) {
+      await transaction
+        .request()
+        .input("bill_id", billId)
+        .input("amount", totalAmount)
+        .input("payment_method_id", payment_method_id)
+        .input("payment_date", new Date())
+        .query(
+          `INSERT INTO bill_payments (bill_id, amount, payment_method_id, payment_date)
+           VALUES (@bill_id, @amount, @payment_method_id, @payment_date)`
+        );
+
+      // faturayı paid yap
+      await transaction
+        .request()
+        .input("id", billId)
+        .query("UPDATE bills SET status = 'paid' WHERE id = @id");
     }
 
     // 4. transaction commit
@@ -182,6 +235,19 @@ export const createBill = async (req, res) => {
 
     bill.cart_items = itemsResult.recordset;
 
+    const paymentsResult = await pool.request().input("bill_id", billId).query(`
+        SELECT bp.id, bp.amount, bp.payment_date, pm.name AS payment_method
+        FROM bill_payments bp
+        JOIN payment_methods pm ON bp.payment_method_id = pm.id
+        WHERE bp.bill_id = @bill_id
+      `);
+
+    bill.payments = paymentsResult.recordset;
+    bill.total_paid = paymentsResult.recordset.reduce(
+      (sum, p) => sum + p.amount,
+      0
+    );
+
     res.status(201).json(bill);
   } catch (error) {
     console.log("Fatura oluşturma hatası: ", error);
@@ -193,7 +259,80 @@ export const createBill = async (req, res) => {
 };
 
 // PUT /bills/:id -> Update a bill by ID
-export const updateBill = async (req, res) => {};
+export const updateBill = async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Yetkiniz yok!" });
+  }
+
+  const billId = req.params.id;
+  const { payments } = req.body;
+
+  if (!billId || !payments || !Array.isArray(payments)) {
+    return res.status(400).json({ message: "Geçersiz veri gönderildi" });
+  }
+
+  try {
+    const pool = await poolPromise;
+
+    // 1. faturayı kontrol et.
+    const billResult = await pool
+      .request()
+      .input("id", billId)
+      .query("SELECT * FROM bills WHERE id = @id");
+
+    const bill = billResult.recordset[0];
+    if (!bill) {
+      return res.status(404).json({ message: "Fatura bulunamadı" });
+    }
+
+    // 2. Yeni ödemeleri ekle
+    for (const p of payments) {
+      await pool
+        .request()
+        .input("bill_id", billId)
+        .input("amount", p.amount)
+        .input("payment_method_id", p.payment_method_id)
+        .input("payment_date", p.date).query(`
+          INSERT INTO bill_payments (bill_id, amount, payment_method_id, payment_date)
+          VALUES (@bill_id, @amount, @payment_method_id, @payment_date)
+        `);
+    }
+
+    // 3. Toplam ödenen miktarı hesapla
+    const paymentsResult = await pool.request().input("bill_id", billId).query(`
+        SELECT SUM(amount) AS total_paid
+        FROM bill_payments
+        WHERE bill_id = @bill_id
+      `);
+
+    const totalPaid = paymentsResult.recordset[0].total_paid || 0;
+
+    let newStatus = "pending";
+
+    if (totalPaid === bill.total_amount) {
+      newStatus = "paid";
+    } else if (totalPaid > 0 && totalPaid < bill.total_amount) {
+      newStatus = "partial";
+    }
+
+    await pool
+      .request()
+      .input("id", billId)
+      .input("status", newStatus)
+      .query(
+        "UPDATE bills SET status = @status, updated_at = GETDATE() WHERE id = @id"
+      );
+
+    res.status(200).json({
+      message: "Fatura güncellendi",
+      totalPaid,
+      status: newStatus,
+    });
+  } catch (error) {
+    console.log("Fatura güncelleme hatası: ", error);
+    res.status(500).json({ message: "Fatura güncelleme hatası!" });
+  }
+};
 
 // DELETE /bills/:id -> Delete a bill by ID
 export const deleteBill = async (req, res) => {
@@ -277,8 +416,9 @@ export const sendBillEmail = async (req, res) => {
 
     // 1. Fatura bilgilerini al
     const billResult = await pool.request().input("id", billId).query(`
-      SELECT b.id, b.total_amount, c.email AS customer_email
+      SELECT b.id, b.total_amount, b.payment_method_id, c.name AS customer_name, c.email AS customer_email, pm.name AS payment_method_name 
       FROM bills b
+      JOIN payment_methods pm ON b.payment_method_id = pm.id
       JOIN customers c ON b.customer_id = c.id
       WHERE b.id = @id
     `);
@@ -289,22 +429,84 @@ export const sendBillEmail = async (req, res) => {
       return res.status(404).json({ message: "Fatura bulunamadı" });
     }
 
-    // 2. E-posta gönder
+    // 2. Fatura kalemlerini al
+    const itemsResult = await pool.request().input("bill_id", billId).query(`
+        SELECT 
+          p.title, 
+          bi.quantity, 
+          bi.unit_price, 
+          bi.quantity * bi.unit_price AS total_price 
+        FROM bill_items bi 
+        JOIN products p ON bi.product_id = p.id
+        WHERE bi.bill_id = @bill_id
+    `);
+
+    const items = itemsResult.recordset;
+
+    // 3. HTML template oluştur
+    let itemsHtml = "";
+    items.forEach((item) => {
+      itemsHtml += `<tr>
+          <td style="border: 1px solid #ddd; padding: 8px;">${item.title}</td>
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${
+            item.quantity
+          }</td>
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${item.unit_price.toFixed(
+            2
+          )} TL</td>
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${item.total_price.toFixed(
+            2
+          )} TL</td>
+        </tr>`;
+    });
+
+    const htmlTemplate = `
+      <h2>Meremin Soft POS - Fatura #${bill.id}</h2>
+      <p>Sayın ${bill.customer_name},</p>
+      <p>Faturanızın detayları aşağıda belirtilmiştir:</p>
+
+      <p><strong>Ödeme Yöntemi:</strong> ${bill.payment_method_name}</p>
+
+      <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+        <thead>
+          <tr>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Ürün</th>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Adet</th>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Birim Fiyat</th>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Toplam Fiyat</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsHtml}
+          <tr>
+            <td colspan="3" style="border: 1px solid #ddd; padding: 8px; text-align: right;"><strong>Genel Toplam:</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;"><strong>${bill.total_amount.toFixed(
+              2
+            )} TL</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>İyi günler dileriz.</p>
+      <p>Meremin Soft POS Ekibi</p>
+      <p style="color:red; font-size:12px; margin-top:10px;">Bu fatura bilgilendirme amaçlıdır, resmi belge olarak kullanılamaz.</p>
+    `;
+
+    // 4. E-posta gönder
     const transporter = nodemailer.createTransport({
-      host: "smtp.example.com",
-      port: 587,
-      secure: false,
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: "your-email@example.com",
-        pass: "your-email-password",
+        user: "emre.ucarr1@gmail.com",
+        pass: "avjr dilf cppo cykm",
       },
     });
 
     const mailOptions = {
-      from: "your-email@example.com",
-      to: bill.customer_email,
-      subject: `Fatura #${bill.id}`,
-      text: `Faturanızın toplam tutarı: ${bill.total_amount} TL`,
+      from: "emre.ucarr1@gmail.com",
+      to: [bill.customer_email, "emre.ucarr1@gmail.com"],
+      subject: `Fatura #${bill.id} - Mere POS`,
+      html: htmlTemplate,
     };
 
     await transporter.sendMail(mailOptions);
