@@ -8,7 +8,6 @@ import React, { useEffect, useState } from "react";
 import { Product, useProductsStore } from "../../../store/useProductsStore";
 import Select from "../../../components/ui/Select";
 import { useCategoriesStore } from "../../../store/useCategoriesStore";
-import PreviewCard from "./PreviewCard";
 import ImageUpload from "../../../components/ui/ImageUpload";
 import Switch from "../../../components/ui/Switch";
 
@@ -173,22 +172,15 @@ const ProductsModal = ({
       }}
       loading={loading}
       height="lg:h-[80vh] h-[80vh]"
-      width="xl:max-w-[65%] max-w-[90%]"
+      width="xl:max-w-[45%] max-w-[90%]"
     >
-      <section className="flex flex-col lg:flex-row justify-between gap-10">
-        <PreviewCard
-          image={previewImage}
-          title={watchTitle}
-          price={watchPrice}
-          stock={watchStock}
-        />
-
-        <form className="space-y-4 w-full" onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex-1 space-y-5">
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
           <Controller
             name="status"
             control={control}
             render={({ field }) => (
-              <div className="flex justify-end">
+              <div className="flex justify-start">
                 <Switch
                   text={field.value ? "Aktif" : "Pasif"}
                   isChecked={field.value}
@@ -197,7 +189,9 @@ const ProductsModal = ({
               </div>
             )}
           />
+        </div>
 
+        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-5">
           <Input
             label="Ürün Adı"
             value={watchTitle}
@@ -206,7 +200,7 @@ const ProductsModal = ({
             required
           />
 
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Input
               type="number"
               label="Ürün Fiyatı"
@@ -242,14 +236,16 @@ const ProductsModal = ({
               />
             )}
           />
+        </div>
 
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
           <ImageUpload
             inputId={isAddOperation ? "productImageAdd" : "productImageEdit"}
             onChange={handleImageChange}
             previewUrl={previewImage}
           />
-        </form>
-      </section>
+        </div>
+      </div>
     </Modal>
   );
 };
