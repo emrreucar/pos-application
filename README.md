@@ -1,3 +1,6 @@
+<img width="2553" height="1224" alt="image" src="https://github.com/user-attachments/assets/d902d284-3d2b-4daa-8699-d995ea46a59d" />
+
+
 # 🛒 Modern POS System - Satış Noktası Uygulaması
 
 React, TypeScript ve modern web teknolojileri kullanılarak geliştirilmiş, işletmeler için kapsamlı satış noktası (Point of Sale) sistemi.
