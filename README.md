@@ -1,24 +1,23 @@
+# 🛒 Modern POS System - Point of Sale Application
+
 <img width="2553" height="1224" alt="image" src="https://github.com/user-attachments/assets/d902d284-3d2b-4daa-8699-d995ea46a59d" />
 
+A comprehensive Point of Sale system for businesses, built with React, TypeScript and modern web technologies.
 
-# 🛒 Modern POS System - Satış Noktası Uygulaması
+## 🌟 Features
 
-React, TypeScript ve modern web teknolojileri kullanılarak geliştirilmiş, işletmeler için kapsamlı satış noktası (Point of Sale) sistemi.
+- 🔐 **Secure Authentication** - JWT-based user authorization
+- 📦 **Product Management** - Add, edit, delete products and category management
+- 🛍️ **Sales Operations** - Fast and easy sales processing, cart management
+- 🧾 **Receipts and Invoicing** - Automatic receipt generation and printing
+- 📊 **Reporting** - Daily, weekly, monthly sales reports
+- 👥 **Customer Management** - Customer records and sales history
+- 💰 **Cash Register Management** - Daily cash register opening/closing operations
+- 📱 **Responsive Design** - Tablet and desktop compatible interface
+- ⚡ **Fast Search** - Instant search for products and customers
+- 🏪 **Multi-Store** - Multiple store support
 
-## 🌟 Özellikler
-
-- 🔐 **Güvenli Kimlik Doğrulama** - JWT tabanlı kullanıcı yetkilendirmesi
-- 📦 **Ürün Yönetimi** - Ürün ekleme, düzenleme, silme ve kategori yönetimi
-- 🛍️ **Satış İşlemleri** - Hızlı ve kolay satış yapma, sepet yönetimi
-- 🧾 **Fiş ve Fatura** - Otomatik fiş oluşturma ve yazdırma
-- 📊 **Raporlama** - Günlük, haftalık, aylık satış raporları
-- 👥 **Müşteri Yönetimi** - Müşteri kayıtları ve satış geçmişi
-- 💰 **Kasa Yönetimi** - Günlük kasa açılış/kapanış işlemleri
-- 📱 **Responsive Tasarım** - Tablet ve desktop uyumlu arayüz
-- ⚡ **Hızlı Arama** - Ürün ve müşteri için anlık arama
-- 🏪 **Multi-Store** - Çoklu mağaza desteği
-
-## 🛠️ Teknoloji Stack
+## 🛠️ Technology Stack
 
 ### Frontend
 - **React 18** - Modern React with hooks
@@ -33,35 +32,35 @@ React, TypeScript ve modern web teknolojileri kullanılarak geliştirilmiş, iş
 - **Microsoft SQL Server** - Relational database
 - **JWT** - JSON Web Token authentication
 
-## 📋 Gereksinimler
+## 📋 Requirements
 
-- Node.js 18.0 veya üzeri
-- npm veya yarn package manager
-- Microsoft SQL Server 2019 veya üzeri
-- SQL Server Management Studio (opsiyonel)
+- Node.js 18.0 or higher
+- npm or yarn package manager
+- Microsoft SQL Server 2019 or higher
+- SQL Server Management Studio (optional)
 
-## 🚀 Kurulum
+## 🚀 Installation
 
-1. **Depoyu klonlayın**
+1. **Clone the repository**
 ```bash
 git clone <your-repo-url>
 cd pos-system
 ```
 
-2. **Backend bağımlılıklarını yükleyin**
+2. **Install backend dependencies**
 ```bash
 cd server
 npm install
 ```
 
-3. **Frontend bağımlılıklarını yükleyin**
+3. **Install frontend dependencies**
 ```bash
 cd client
 npm install
 ```
 
-4. **Environment variables ayarlayın**
-Server klasöründe `.env` dosyası oluşturun:
+4. **Set up environment variables**
+Create a `.env` file in the server folder:
 ```env
 # Database
 MSSQL_DATABASE=your_database_name
@@ -79,14 +78,14 @@ NODE_ENV="development"
 # CORS
 ```
 
-Client klasöründe `.env` dosyası oluşturun:
+Create a `.env` file in the client folder:
 ```env
 # API Base URL
 VITE_API_URL=http://localhost:4000/api
 VITE_BASE_IMAGE_URL=http://localhost:4000
 ```
 
-5. **Backend server'ı başlatın**
+5. **Start the backend server**
 ```bash
 cd server
 npm run dev
@@ -94,15 +93,15 @@ Server is running on port 4000...
 Connected to MSSQL database...
 ```
 
-7. **Frontend uygulamasını başlatın**
+7. **Start the frontend application**
 ```bash
 cd client
 npm run dev
 ```
 
-Backend [http://localhost:4000](http://localhost:4000), Frontend [http://localhost:7000](http://localhost:7000) adresinde çalışacaktır.
+Backend will run at [http://localhost:4000](http://localhost:4000), Frontend at [http://localhost:7000](http://localhost:7000).
 
-## 🏗️ Proje Yapısı
+## 🏗️ Project Structure
 
 ```
 pos-system/
@@ -131,44 +130,44 @@ pos-system/
 └── README.md
 ```
 
-## 📱 Ana Sayfalar
+## 📱 Main Pages
 
-- **Dashboard** - Günlük satış özeti ve hızlı erişim
-- **Satış Ekranı** - POS terminal arayüzü
-- **Ürün Yönetimi** - Ürün CRUD işlemleri
-- **Kategori Yönetimi** - Ürün kategorileri
-- **Müşteri Yönetimi** - Müşteri kayıtları
-- **Satış Raporları** - Detaylı satış analizleri
-- **Kasa Yönetimi** - Günlük kasa işlemleri
-- **Kullanıcı Yönetimi** - Personel ve yetki yönetimi
+- **Dashboard** - Daily sales summary and quick access
+- **Sales Screen** - POS terminal interface
+- **Product Management** - Product CRUD operations
+- **Category Management** - Product categories
+- **Customer Management** - Customer records
+- **Sales Reports** - Detailed sales analytics
+- **Cash Register Management** - Daily cash register operations
+- **User Management** - Staff and permission management
 
-## 🔧 Önemli Özellikler
+## 🔧 Key Features
 
-### Satış İşlemleri
-- Hızlı ürün arama ve ekleme
-- Sepet yönetimi (miktar, indirim)
-- Çoklu ödeme yöntemi (nakit, kart, çek)
-- Otomatik fiş yazdırma
+### Sales Operations
+- Fast product search and adding
+- Cart management (quantity, discount)
+- Multiple payment methods (cash, card, check)
+- Automatic receipt printing
 
-### Ürün Yönetimi
-- Toplu ürün import/export
-- Kategori bazlı filtreleme
-- Stok takibi ve uyarıları
-- Resim upload desteği
-- Fiyat geçmişi
+### Product Management
+- Bulk product import/export
+- Category-based filtering
+- Stock tracking and alerts
+- Image upload support
+- Price history
 
-### Raporlama
-- Günlük satış raporu
-- En çok satan ürünler
-- Müşteri analizi
-- Kar-zarar hesaplaması
-- Excel export özelliği
+### Reporting
+- Daily sales reports
+- Best-selling products
+- Customer analysis
+- Profit-loss calculation
+- Excel export feature
 
-### Kullanıcı Yetkilendirmesi
-- Admin, Manager, Kasiyer rolleri
-- Sayfa bazlı erişim kontrolü
-- İşlem logları
-- Session yönetimi
+### User Authorization
+- Admin, Manager, Cashier roles
+- Page-based access control
+- Transaction logs
+- Session management
 
 ## 🌐 Deployment
 
@@ -184,39 +183,39 @@ npm run build
 npm start
 ```
 
-## 🔒 Güvenlik
+## 🔒 Security
 
-- JWT token tabanlı authentication
+- JWT token-based authentication
 - Password hashing (bcrypt)
 - Rate limiting
 - CORS protection
 - SQL injection prevention
 - XSS protection
 
-## 🤝 Katkıda Bulunma
+## 🤝 Contributing
 
-Bu proje aktif olarak geliştirilmektedir. Katkılarınızı memnuniyetle karşılarım:
+This project is actively being developed. I welcome your contributions:
 
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit edin (`git commit -m 'Add amazing feature'`)
-4. Push edin (`git push origin feature/amazing-feature`)
-5. Pull Request oluşturun
+1. Fork it
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Create a Pull Request
 
-## 📄 Lisans
+## 📄 License
 
-Bu proje MIT lisansı altında lisanslanmıştır.
+This project is licensed under the MIT License.
 
-## 📞 İletişim
+## 📞 Contact
 
-Sorularınız için:
-- GitHub Issues kullanabilirsiniz
+For questions:
+- You can use GitHub Issues
 - Email: emre.ucarr1@gmail.com
 
 ---
 
-⭐ Projeyi beğendiyseniz yıldız vermeyi unutmayın!
+⭐ Don't forget to star the project if you liked it!
 
-## 🙏 Teşekkürler
+## 🙏 Acknowledgments
 
-Bu proje modern POS sistemlerinin ihtiyaçlarını karşılamak amacıyla geliştirilmiştir. Küçük ve orta ölçekli işletmelerin dijital dönüşümüne katkıda bulunmayı hedeflemektedir.
+This project was developed to meet the needs of modern POS systems. It aims to contribute to the digital transformation of small and medium-sized businesses.
